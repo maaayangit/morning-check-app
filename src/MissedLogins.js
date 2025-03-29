@@ -4,7 +4,7 @@ export default function MissedLogins() {
   const [missedLogins, setMissedLogins] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/login-check")
+    fetch("https://fastapi-backend-dot2.onrender.com/login-check")
       .then((res) => res.json())
       .then((data) => {
         console.log("🔍 ログインチェック結果:", data);
