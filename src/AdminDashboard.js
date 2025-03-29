@@ -29,7 +29,7 @@ export default function AdminDashboard() {
         setSchedulePreview(data);
   
         // FastAPI に送信！
-        fetch("http://localhost:8000/upload-schedule", {
+        fetch("https://fastapi-backend-dot2.onrender.com/upload-schedule", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),

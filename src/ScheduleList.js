@@ -4,7 +4,7 @@ export default function ScheduleList() {
   const [schedules, setSchedules] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/schedules")
+    fetch("https://fastapi-backend-dot2.onrender.com/schedules")
       .then((res) => res.json())
       .then((data) => {
         console.log("取得したスケジュール:", data);
