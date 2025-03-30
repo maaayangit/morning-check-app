@@ -1,14 +1,14 @@
 import Papa from "papaparse";
 import React, { useState, useEffect } from "react";
+import MissedLoginList from "./MissedLoginList"; // 🔁 追加
 
 export default function AdminDashboard() {
   const [csvFile, setCsvFile] = useState(null);
   const [schedulePreview, setSchedulePreview] = useState([]);
-  const [showPreview, setShowPreview] = useState(false); // ← デフォルト非表示
+  const [showPreview, setShowPreview] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState(null);
   const [lastUploadTime, setLastUploadTime] = useState(null);
 
-  // ✅ ローカルストレージから読み込む
   useEffect(() => {
     const storedName = localStorage.getItem("uploadedFileName");
     const storedTime = localStorage.getItem("lastUploadTime");
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
         }));
 
         setSchedulePreview(data);
-        setShowPreview(false); // ✅ アップロード後に表示
+        setShowPreview(false);
 
         fetch("https://fastapi-backend-dot2.onrender.com/upload-schedule", {
           method: "POST",
@@ -54,7 +54,6 @@ export default function AdminDashboard() {
 
             const now = new Date().toLocaleString();
 
-            // ✅ 保存処理
             localStorage.setItem("uploadedFileName", csvFile.name);
             localStorage.setItem("lastUploadTime", now);
 
@@ -69,7 +68,6 @@ export default function AdminDashboard() {
     });
   };
 
-  // ✅ リセット処理
   const handleReset = () => {
     localStorage.removeItem("uploadedFileName");
     localStorage.removeItem("lastUploadTime");
@@ -82,28 +80,21 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-4 space-y-6">
-      <h1 className="text-xl font-bold">管理者用ダッシュボード</h1>
+      <h1 className="text-xl font-bold">🛠️ 管理者用ダッシュボード</h1>
 
       <div className="bg-white shadow rounded-xl p-4 space-y-2">
         <h2 className="font-semibold">📂 勤務予定CSVアップロード</h2>
         <input type="file" accept=".csv" onChange={handleFileChange} className="block" />
 
         <div className="flex items-center space-x-4 mt-2">
-          <button
-            onClick={handleUpload}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
+          <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 rounded">
             アップロード
           </button>
-          <button
-            onClick={handleReset}
-            className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
-          >
+          <button onClick={handleReset} className="bg-gray-300 text-gray-800 px-4 py-2 rounded">
             リセット
           </button>
         </div>
 
-        {/* ✅ アップロード済み情報の表示 */}
         {uploadedFileName && (
           <div className="text-sm text-gray-600 mt-2 space-y-1">
             <p>📄 アップロード済みファイル: {uploadedFileName}</p>
@@ -112,7 +103,6 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* ✅ 表示切り替え */}
       {schedulePreview.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
@@ -168,6 +158,9 @@ export default function AdminDashboard() {
           )}
         </div>
       )}
+
+      {/* 🚨 未ログイン・遅刻者一覧を追加表示 */}
+      <MissedLoginList />
     </div>
   );
 }

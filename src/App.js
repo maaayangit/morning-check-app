@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
@@ -5,25 +6,7 @@ import AdminDashboard from "./AdminDashboard";
 import StaffDashboard from "./StaffDashboard";
 import ScheduleList from "./ScheduleList";
 import MissedLogins from "./MissedLogins";
-
-function Home() {
-  return (
-    <div className="min-h-screen bg-gray-100 p-10 space-y-6">
-      <Helmet><title>勤怠支援アプリ</title></Helmet>
-      <h1 className="text-2xl font-bold">📊 勤怠支援アプリ</h1>
-      <p className="text-gray-600">ご自身の役割を選択してください。</p>
-
-      <div className="space-x-4">
-        <Link to="/admin" className="bg-blue-500 text-white px-4 py-2 rounded">
-          管理者としてログイン
-        </Link>
-        <Link to="/staff" className="bg-green-500 text-white px-4 py-2 rounded">
-          担当者としてログイン
-        </Link>
-      </div>
-    </div>
-  );
-}
+import Home from "./pages/Home"; // 🔁 Home を pages フォルダから読み込むように変更
 
 function AdminPage() {
   const [selectedDate, setSelectedDate] = useState("");
