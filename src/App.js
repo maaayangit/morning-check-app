@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
@@ -13,59 +12,41 @@ function AdminPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 space-y-6">
-      <Helmet><title>勤怠支援アプリ - 管理者</title></Helmet>
+    <div className="min-h-screen bg-gray-100 p-4 space-y-6">
+      <Helmet>
+        <title>勤怠支援アプリ - 管理者</title>
+      </Helmet>
 
-      {/* ヘッダー */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center space-x-2">
-            <span>📊 勤怠支援アプリ</span>
-            <span className="text-gray-500 text-base">管理者用ダッシュボード</span>
-          </h1>
-          <p className="text-sm text-gray-600 mt-1">
-            勤務予定CSVをアップロードしてください。日付ごとの勤務状況を確認できます。
-          </p>
+          <h1 className="text-2xl font-bold text-gray-800">📊 勤怠支援アプリ</h1>
+          <p className="text-gray-500 text-sm">管理者用ダッシュボード</p>
         </div>
         <button
           onClick={() => navigate("/")}
-          className="bg-gray-300 hover:bg-gray-400 text-sm text-black px-4 py-1 rounded transition"
+          className="bg-gray-300 text-sm text-black px-4 py-2 rounded shadow"
         >
           ホームに戻る
         </button>
       </div>
 
-      {/* メインボード */}
-      <div className="bg-white shadow rounded-xl p-6 space-y-6">
-        <h2 className="text-lg font-semibold">🛠️ 管理者用ダッシュボード</h2>
-        <AdminDashboard />
-      </div>
+      <AdminDashboard />
 
-      {/* 日付選択と一覧 */}
       <div className="bg-white shadow rounded-xl p-6 space-y-4">
-        <div className="flex items-center space-x-4">
-          <label className="font-semibold">📅 一覧で表示する日付を選択:</label>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="border rounded px-2 py-1"
-          />
-        </div>
+        <label className="font-semibold">📅 一覧表示する日付を選択:</label>
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className="border rounded px-2 py-1"
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-          <div>
-            <h3 className="text-md font-semibold mb-2">📋 勤務予定一覧</h3>
-            <div className="bg-gray-50 border rounded-xl p-3">
-              <ScheduleList selectedDate={selectedDate} />
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="bg-gray-50 border rounded p-4 shadow">
+            <ScheduleList selectedDate={selectedDate} />
           </div>
-
-          <div>
-            <h3 className="text-md font-semibold mb-2">🚨 未ログイン・遅刻者一覧</h3>
-            <div className="bg-gray-50 border rounded-xl p-3">
-              <MissedLoginList selectedDate={selectedDate} />
-            </div>
+          <div className="bg-gray-50 border rounded p-4 shadow">
+            <MissedLoginList selectedDate={selectedDate} />
           </div>
         </div>
       </div>
