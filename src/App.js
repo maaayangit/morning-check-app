@@ -1,11 +1,11 @@
 // src/App.js
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import AdminDashboard from "./AdminDashboard";
 import StaffDashboard from "./StaffDashboard";
 import ScheduleList from "./ScheduleList";
-import MissedLoginList from "./MissedLoginList"; // ✅ 統一された名前
+import MissedLoginList from "./MissedLoginList";
 import Home from "./pages/Home";
 
 function AdminPage() {
@@ -13,9 +13,11 @@ function AdminPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 space-y-6">
+    <div className="min-h-screen bg-gray-100 p-6 space-y-6">
       <Helmet><title>勤怠支援アプリ - 管理者</title></Helmet>
-      <div className="flex justify-between items-center">
+
+      {/* ヘッダー */}
+      <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="text-2xl font-bold flex items-center space-x-2">
             <span>📊 勤怠支援アプリ</span>
@@ -27,17 +29,22 @@ function AdminPage() {
         </div>
         <button
           onClick={() => navigate("/")}
-          className="bg-gray-300 text-sm text-black px-4 py-1 rounded"
+          className="bg-gray-300 hover:bg-gray-400 text-sm text-black px-4 py-1 rounded transition"
         >
           ホームに戻る
         </button>
       </div>
 
-      <div className="bg-white shadow rounded-xl p-4 space-y-4">
+      {/* メインボード */}
+      <div className="bg-white shadow rounded-xl p-6 space-y-6">
+        <h2 className="text-lg font-semibold">🛠️ 管理者用ダッシュボード</h2>
         <AdminDashboard />
+      </div>
 
-        <div className="ml-4">
-          <label className="font-semibold mr-2">一覧で表示する日付を選択:</label>
+      {/* 日付選択と一覧 */}
+      <div className="bg-white shadow rounded-xl p-6 space-y-4">
+        <div className="flex items-center space-x-4">
+          <label className="font-semibold">📅 一覧で表示する日付を選択:</label>
           <input
             type="date"
             value={selectedDate}
@@ -45,15 +52,21 @@ function AdminPage() {
             className="border rounded px-2 py-1"
           />
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white shadow rounded-xl p-4">
-          <ScheduleList selectedDate={selectedDate} />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          <div>
+            <h3 className="text-md font-semibold mb-2">📋 勤務予定一覧</h3>
+            <div className="bg-gray-50 border rounded-xl p-3">
+              <ScheduleList selectedDate={selectedDate} />
+            </div>
+          </div>
 
-        <div className="bg-white shadow rounded-xl p-4">
-          <MissedLoginList selectedDate={selectedDate} /> {/* ✅ 名前を統一 */}
+          <div>
+            <h3 className="text-md font-semibold mb-2">🚨 未ログイン・遅刻者一覧</h3>
+            <div className="bg-gray-50 border rounded-xl p-3">
+              <MissedLoginList selectedDate={selectedDate} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
