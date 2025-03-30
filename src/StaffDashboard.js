@@ -55,7 +55,7 @@ export default function StaffDashboard() {
     );
 
     if (!hasTodayPlan) {
-      setMessage("⛔ 登録日以外なので登録できません！");
+      setMessage("⛔ 計画登録日以外なので登録できません！");
       return;
     }
 
@@ -114,6 +114,11 @@ export default function StaffDashboard() {
 
     setRefreshLog((prev) => !prev); // 🔁 更新トリガー
     setMessage("出勤予定を登録しました");
+
+
+    // 🔽 ここでメッセージを3秒後に消す
+    setTimeout(() => setMessage(""), 3000);
+
   };
 
   return (
