@@ -82,7 +82,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-4 space-y-6">
-      <h1 className="text-xl font-bold">管理者ダッシュボード</h1>
+      <h1 className="text-xl font-bold">管理者用ダッシュボード</h1>
 
       <div className="bg-white shadow rounded-xl p-4 space-y-2">
         <h2 className="font-semibold">📂 勤務予定CSVアップロード</h2>
