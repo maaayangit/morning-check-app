@@ -4,6 +4,7 @@ import React, { useState } from "react";
 export default function AdminDashboard() {
   const [csvFile, setCsvFile] = useState(null);
   const [schedulePreview, setSchedulePreview] = useState([]);
+  const [showPreview, setShowPreview] = useState(true); // ← 表示切替状態を追加！
 
   const handleFileChange = (e) => {
     setCsvFile(e.target.files[0]);
@@ -11,7 +12,7 @@ export default function AdminDashboard() {
 
   const handleUpload = () => {
     if (!csvFile) return;
-  
+
     Papa.parse(csvFile, {
       header: true,
       skipEmptyLines: true,
@@ -25,9 +26,9 @@ export default function AdminDashboard() {
           login_time: row.login_time || null,
           is_holiday: row.is_holiday === "TRUE" || row.is_holiday === "true",
         }));
-  
+
         setSchedulePreview(data);
-  
+
         fetch("https://fastapi-backend-dot2.onrender.com/upload-schedule", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -43,11 +44,8 @@ export default function AdminDashboard() {
             alert("送信に失敗しました");
           });
       },
-    }); // ← ここでPapa.parse() 終わり
-  
-  }; // ← ❗ handleUpload の閉じ括弧を忘れずに
-  
-    
+    });
+  };
 
   return (
     <div className="p-4 space-y-6">
@@ -61,33 +59,61 @@ export default function AdminDashboard() {
         </button>
       </div>
 
+      {/* ✅ 表示切り替えラジオ */}
       {schedulePreview.length > 0 && (
-        <div className="bg-white shadow rounded-xl p-4">
-          <h2 className="font-semibold mb-2">CSVプレビュー</h2>
-          <table className="w-full text-sm border">
-            <thead>
-              <tr>
-                <th className="text-left border px-2 py-1">ユーザー名</th>
-                <th className="text-left border px-2 py-1">日付</th>
-                <th className="text-left border px-2 py-1">勤務指定</th>
-                <th className="text-left border px-2 py-1">予定ログイン</th>
-                <th className="text-left border px-2 py-1">ログイン時刻</th>
-                <th className="text-left border px-2 py-1">休日</th>
-              </tr>
-            </thead>
-            <tbody>
-              {schedulePreview.map((row, idx) => (
-                <tr key={idx}>
-                  <td className="border px-2 py-1">{row.username}</td>
-                  <td className="border px-2 py-1">{row.date}</td>
-                  <td className="border px-2 py-1">{row.work_code || "-"}</td>
-                  <td className="border px-2 py-1">{row.expected_login_time || "-"}</td>
-                  <td className="border px-2 py-1">{row.login_time || "-"}</td>
-                  <td className="border px-2 py-1">{row.is_holiday ? "✅" : "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <label className="font-semibold">CSVプレビュー表示:</label>
+            <label className="flex items-center space-x-1">
+              <input
+                type="radio"
+                name="preview"
+                checked={showPreview === true}
+                onChange={() => setShowPreview(true)}
+              />
+              <span>表示</span>
+            </label>
+            <label className="flex items-center space-x-1">
+              <input
+                type="radio"
+                name="preview"
+                checked={showPreview === false}
+                onChange={() => setShowPreview(false)}
+              />
+              <span>非表示</span>
+            </label>
+          </div>
+
+          {/* ✅ CSVプレビュー */}
+          {showPreview && (
+            <div className="bg-white shadow rounded-xl p-4">
+              <h2 className="font-semibold mb-2">CSVプレビュー</h2>
+              <table className="w-full text-sm border">
+                <thead>
+                  <tr>
+                    <th className="text-left border px-2 py-1">ユーザー名</th>
+                    <th className="text-left border px-2 py-1">日付</th>
+                    <th className="text-left border px-2 py-1">勤務指定</th>
+                    <th className="text-left border px-2 py-1">予定ログイン</th>
+                    <th className="text-left border px-2 py-1">ログイン時刻</th>
+                    <th className="text-left border px-2 py-1">休日</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {schedulePreview.map((row, idx) => (
+                    <tr key={idx}>
+                      <td className="border px-2 py-1">{row.username}</td>
+                      <td className="border px-2 py-1">{row.date}</td>
+                      <td className="border px-2 py-1">{row.work_code || "-"}</td>
+                      <td className="border px-2 py-1">{row.expected_login_time || "-"}</td>
+                      <td className="border px-2 py-1">{row.login_time || "-"}</td>
+                      <td className="border px-2 py-1">{row.is_holiday ? "✅" : "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </div>

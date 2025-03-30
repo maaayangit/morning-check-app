@@ -15,7 +15,7 @@ function App() {
           <span className="text-gray-500 text-base">管理者用ダッシュボード</span>
         </h1>
         <p className="text-sm text-gray-600 mt-1">
-          勤務予定CSVをアップロードし、日付ごとの勤務状況を確認できます。
+          勤務予定CSVをアップロードしてください。日付ごとの勤務状況を確認できます。
         </p>
       </div>
 
