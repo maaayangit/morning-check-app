@@ -5,7 +5,6 @@ export default function PlanLogList({ userId, refreshTrigger }) {
   const [schedules, setSchedules] = useState([]);
   const [error, setError] = useState("");
 
-  // 出勤予定ログ（PlanLog）と実績（Schedule）を取得
   useEffect(() => {
     if (!userId || isNaN(userId)) {
       setError("⚠️ 社員番号が正しくありません。");
@@ -36,7 +35,7 @@ export default function PlanLogList({ userId, refreshTrigger }) {
       .catch((err) => {
         console.error("実績データ取得失敗:", err);
       });
-  }, [userId, refreshTrigger]); // 👈 refreshTrigger を追加
+  }, [userId, refreshTrigger]);
 
   // 日付をキーにマッピング
   const actualLoginMap = {};
@@ -45,6 +44,16 @@ export default function PlanLogList({ userId, refreshTrigger }) {
       actualLoginMap[s.date] = s.login_time;
     }
   });
+
+  // 日本時間に変換してフォーマットする関数
+  const formatDateTimeJST = (isoString) => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    return date.toLocaleString("ja-JP", {
+      timeZone: "Asia/Tokyo",
+      hour12: false,
+    });
+  };
 
   return (
     <div className="p-4 bg-white shadow rounded-xl mt-6">
@@ -67,9 +76,13 @@ export default function PlanLogList({ userId, refreshTrigger }) {
               <tr key={idx}>
                 <td className="border px-2 py-1">{log.date}</td>
                 <td className="border px-2 py-1">{log.expected_login_time}</td>
-                <td className="border px-2 py-1">{log.registered_at}</td>
                 <td className="border px-2 py-1">
-                  {actualLoginMap[log.date] || "－"}
+                  {formatDateTimeJST(log.registered_at)}
+                </td>
+                <td className="border px-2 py-1">
+                  {actualLoginMap[log.date]
+                    ? formatDateTimeJST(`${log.date}T${actualLoginMap[log.date]}`)
+                    : "－"}
                 </td>
               </tr>
             ))}
