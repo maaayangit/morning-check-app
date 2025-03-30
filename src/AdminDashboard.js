@@ -40,7 +40,7 @@ export default function AdminDashboard() {
         }));
 
         setSchedulePreview(data);
-        setShowPreview(true); // ✅ アップロード後に表示
+        setShowPreview(false); // ✅ アップロード後に表示
 
         fetch("https://fastapi-backend-dot2.onrender.com/upload-schedule", {
           method: "POST",
