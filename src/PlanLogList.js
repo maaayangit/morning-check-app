@@ -1,36 +1,54 @@
 import React, { useEffect, useState } from "react";
 
-export default function PlanLogList({ userId, refreshTrigger }) {
+export default function PlanLogList({ userId }) {
   const [logs, setLogs] = useState([]);
+  const [schedules, setSchedules] = useState([]);
   const [error, setError] = useState("");
 
+  // 出勤予定ログ（PlanLog）を取得
   useEffect(() => {
     if (!userId || isNaN(userId)) {
       setError("⚠️ 社員番号が正しくありません。");
       setLogs([]);
+      setSchedules([]);
       return;
     }
 
+    // PlanLog取得
     fetch(`https://fastapi-backend-dot2.onrender.com/log-plan?user_id=${userId}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.length === 0) {
-          setError("⚠️ 入力された社員番号に一致するデータが見つかりません。");
-          setLogs([]);
-        } else {
-          setError("");
-          setLogs(data);
-        }
+        setLogs(data);
+        setError("");
       })
       .catch((err) => {
-        console.error("取得失敗:", err);
-        setError("⛔ データ取得に失敗しました。");
+        console.error("予定ログ取得失敗:", err);
+        setError("⛔ 出勤予定データの取得に失敗しました。");
       });
-  }, [userId, refreshTrigger]); // 👈 ここに refreshTrigger を追加！
+
+    // Schedule取得（出勤実績用）
+    fetch(`https://fastapi-backend-dot2.onrender.com/schedules`)
+      .then((res) => res.json())
+      .then((data) => {
+        const filtered = data.filter((item) => String(item.user_id) === String(userId));
+        setSchedules(filtered);
+      })
+      .catch((err) => {
+        console.error("実績データ取得失敗:", err);
+      });
+  }, [userId]);
+
+  // 日付をキーにマッピング
+  const actualLoginMap = {};
+  schedules.forEach((s) => {
+    if (s.login_time) {
+      actualLoginMap[s.date] = s.login_time;
+    }
+  });
 
   return (
     <div className="p-4 bg-white shadow rounded-xl mt-6">
-      <h2 className="font-bold text-lg">📖 出勤予定履歴</h2>
+      <h2 className="font-bold text-lg">📖 出勤予実履歴</h2>
 
       {error && <p className="text-red-600 font-semibold">{error}</p>}
 
@@ -39,8 +57,9 @@ export default function PlanLogList({ userId, refreshTrigger }) {
           <thead>
             <tr>
               <th className="border px-2 py-1">日付</th>
-              <th className="border px-2 py-1">出勤予定時刻</th>
+              <th className="border px-2 py-1">予定時刻</th>
               <th className="border px-2 py-1">登録時刻</th>
+              <th className="border px-2 py-1">出勤実績</th>
             </tr>
           </thead>
           <tbody>
@@ -49,6 +68,9 @@ export default function PlanLogList({ userId, refreshTrigger }) {
                 <td className="border px-2 py-1">{log.date}</td>
                 <td className="border px-2 py-1">{log.expected_login_time}</td>
                 <td className="border px-2 py-1">{log.registered_at}</td>
+                <td className="border px-2 py-1">
+                  {actualLoginMap[log.date] || "－"}
+                </td>
               </tr>
             ))}
           </tbody>
