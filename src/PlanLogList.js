@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-export default function PlanLogList({ userId }) {
+export default function PlanLogList({ userId, refreshTrigger }) {
   const [logs, setLogs] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [error, setError] = useState("");
 
-  // 出勤予定ログ（PlanLog）を取得
+  // 出勤予定ログ（PlanLog）と実績（Schedule）を取得
   useEffect(() => {
     if (!userId || isNaN(userId)) {
       setError("⚠️ 社員番号が正しくありません。");
@@ -36,7 +36,7 @@ export default function PlanLogList({ userId }) {
       .catch((err) => {
         console.error("実績データ取得失敗:", err);
       });
-  }, [userId]);
+  }, [userId, refreshTrigger]); // 👈 refreshTrigger を追加
 
   // 日付をキーにマッピング
   const actualLoginMap = {};
