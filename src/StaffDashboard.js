@@ -54,7 +54,7 @@ export default function StaffDashboard() {
 
   return (
     <div className="bg-white p-4 shadow rounded-xl space-y-4">
-      <h2 className="text-lg font-bold">🧑 担当者ダッシュボード</h2>
+      <h2 className="text-lg font-bold">🧑 担当者用ダッシュボード</h2>
 
       <div>
         <label className="font-semibold mr-2">日付選択:</label>

@@ -1,6 +1,7 @@
 // App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet"; // ← ヘルメット追加
 import AdminDashboard from "./AdminDashboard";
 import StaffDashboard from "./StaffDashboard";
 import ScheduleList from "./ScheduleList";
@@ -9,6 +10,7 @@ import MissedLogins from "./MissedLogins";
 function Home() {
   return (
     <div className="min-h-screen bg-gray-100 p-10 space-y-6">
+      <Helmet><title>勤怠支援アプリ</title></Helmet>
       <h1 className="text-2xl font-bold">📊 勤怠支援アプリ</h1>
       <p className="text-gray-600">ご自身の役割を選択してください。</p>
 
@@ -30,6 +32,7 @@ function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 space-y-6">
+      <Helmet><title>勤怠支援アプリ - 管理者</title></Helmet>
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold flex items-center space-x-2">
@@ -80,6 +83,7 @@ function StaffPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 space-y-4">
+      <Helmet><title>勤怠支援アプリ - 担当者</title></Helmet>
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">🧑 担当者用ダッシュボード</h1>
