@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import PlanLogList from "./PlanLogList";
 
 export default function StaffDashboard() {
-  const [userId, setUserId] = useState(""); // ← 7桁社員番号
+  const [userId, setUserId] = useState(""); // 7桁社員番号
   const [mode, setMode] = useState("");
   const [message, setMessage] = useState("");
   const [selectedPlanDate, setSelectedPlanDate] = useState("");
@@ -11,7 +12,7 @@ export default function StaffDashboard() {
   const [workCodeMaster, setWorkCodeMaster] = useState({});
   const navigate = useNavigate();
 
-  // 🔁 勤務指定を取得（社員番号と日付に基づく）
+  // 勤務指定取得
   useEffect(() => {
     if (!userId || !selectedPlanDate) return;
 
@@ -32,7 +33,7 @@ export default function StaffDashboard() {
       });
   }, [selectedPlanDate, userId]);
 
-  // ✅ 実績登録
+  // 実績登録
   const handleActualLogin = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -59,7 +60,7 @@ export default function StaffDashboard() {
     setMessage(result.message || "出勤記録を登録しました");
   };
 
-  // ✅ 計画登録
+  // 計画登録
   const handlePlanSubmit = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -205,6 +206,9 @@ export default function StaffDashboard() {
           </div>
         )}
       </div>
+
+      {/* 📖 出勤予定履歴表示 */}
+      {userId && userId.length === 7 && <PlanLogList userId={userId} />}
     </div>
   );
 }
