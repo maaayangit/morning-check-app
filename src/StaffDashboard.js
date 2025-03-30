@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PlanLogList from "./PlanLogList";
 
 export default function StaffDashboard() {
-  const [userId, setUserId] = useState(""); // 7桁社員番号
+  const [userId, setUserId] = useState("");
   const [mode, setMode] = useState("");
   const [message, setMessage] = useState("");
   const [selectedPlanDate, setSelectedPlanDate] = useState("");
@@ -12,13 +12,11 @@ export default function StaffDashboard() {
   const [workCodeMaster, setWorkCodeMaster] = useState({});
   const navigate = useNavigate();
 
-  // 勤務指定取得
+  // 勤務指定を取得
   useEffect(() => {
     if (!userId || !selectedPlanDate) return;
 
-    fetch(
-      `https://fastapi-backend-dot2.onrender.com/work-code?user_id=${userId}&date=${selectedPlanDate}`
-    )
+    fetch(`https://fastapi-backend-dot2.onrender.com/work-code?user_id=${userId}&date=${selectedPlanDate}`)
       .then((res) => res.json())
       .then((data) => {
         setWorkCode(data.work_code || "");
@@ -60,7 +58,7 @@ export default function StaffDashboard() {
     setMessage(result.message || "出勤記録を登録しました");
   };
 
-  // 計画登録
+  // 計画登録 + PlanLog 保存
   const handlePlanSubmit = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -74,9 +72,7 @@ export default function StaffDashboard() {
 
     const requiredTime = workCodeMaster[workCode];
     if (requiredTime && expectedTime > requiredTime) {
-      setMessage(
-        `⛔ 勤務指定 (${workCode}) の ${requiredTime} より遅い出勤は登録できません`
-      );
+      setMessage(`⛔ 勤務指定 (${workCode}) の ${requiredTime} より遅い出勤は登録できません`);
       return;
     }
 
@@ -86,7 +82,15 @@ export default function StaffDashboard() {
       expected_login_time: expectedTime,
     };
 
+    // スケジュール登録API
     const res = await fetch("https://fastapi-backend-dot2.onrender.com/update-expected-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    // ログ保存API
+    await fetch("https://fastapi-backend-dot2.onrender.com/log-plan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -125,7 +129,7 @@ export default function StaffDashboard() {
           />
         </div>
 
-        {/* 登録モード切替 */}
+        {/* モード切替 */}
         <div className="flex flex-wrap gap-4 mt-4">
           <button
             onClick={() => setMode("actual")}
@@ -145,7 +149,7 @@ export default function StaffDashboard() {
           </button>
         </div>
 
-        {/* 実績登録フォーム */}
+        {/* 実績登録 */}
         {mode === "actual" && (
           <div className="mt-6 space-y-4">
             <p className="font-semibold text-gray-700">🎯 本日の出勤実績を記録:</p>
@@ -159,7 +163,7 @@ export default function StaffDashboard() {
           </div>
         )}
 
-        {/* 計画登録フォーム */}
+        {/* 計画登録 */}
         {mode === "plan" && (
           <div className="mt-6 space-y-4">
             <p className="font-semibold text-gray-700">📝 出勤予定の登録:</p>
