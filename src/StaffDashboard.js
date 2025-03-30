@@ -1,4 +1,3 @@
-// StaffDashboard.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -8,23 +7,39 @@ export default function StaffDashboard() {
   const [selectedPlanDate, setSelectedPlanDate] = useState("");
   const [expectedTime, setExpectedTime] = useState("00:00");
   const [workCode, setWorkCode] = useState("");
+  const [workCodeMaster, setWorkCodeMaster] = useState({});
+  const userId = 1; // FIXME: ログインユーザーのIDを設定
   const navigate = useNavigate();
 
-  // 📌 勤務指定 → 出勤指定時刻マスター（仮にフロントに定義）
-  const workCodeMaster = {
-    "★07A": "07:00",
-    "★08A": "08:00",
-    "★11A": "11:00",
-  };
+  // 🔁 選択した日付に応じて勤務指定を取得
+  useEffect(() => {
+    if (!selectedPlanDate) return;
 
-  // ✅ 実績登録送信
+    fetch(
+      `https://fastapi-backend-dot2.onrender.com/work-code?user_id=${userId}&date=${selectedPlanDate}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setWorkCode(data.work_code || "");
+        setWorkCodeMaster({
+            "★07A": "07:00",
+            "★08A": "08:00",
+            "★11A": "11:00",
+        });
+      })
+      .catch((err) => {
+        console.error("勤務指定の取得に失敗:", err);
+      });
+  }, [selectedPlanDate]);
+
+  // ✅ 実績登録
   const handleActualLogin = async () => {
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
     const time = now.toTimeString().slice(0, 5);
 
     const payload = {
-      user_id: 1, // FIXME: ログインユーザーIDに差し替え
+      user_id: userId,
       date: today,
       login_time: time,
     };
@@ -39,7 +54,7 @@ export default function StaffDashboard() {
     setMessage(result.message || "出勤記録を登録しました");
   };
 
-  // ✅ 計画登録送信
+  // ✅ 計画登録
   const handlePlanSubmit = async () => {
     if (!selectedPlanDate || !expectedTime) {
       setMessage("⛔ 日付と出勤予定時刻を入力してください");
@@ -48,12 +63,14 @@ export default function StaffDashboard() {
 
     const requiredTime = workCodeMaster[workCode];
     if (requiredTime && expectedTime > requiredTime) {
-      setMessage(`⛔ 勤務指定 (${workCode}) の ${requiredTime} より遅い出勤は登録できません`);
+      setMessage(
+        `⛔ 勤務指定 (${workCode}) の ${requiredTime} より遅い出勤は登録できません`
+      );
       return;
     }
 
     const payload = {
-      user_id: 1,
+      user_id: userId,
       date: selectedPlanDate,
       expected_login_time: expectedTime,
     };
@@ -71,7 +88,7 @@ export default function StaffDashboard() {
   return (
     <div className="min-h-screen bg-gray-100 p-6 space-y-6">
       <div className="bg-white shadow rounded-xl p-6 space-y-4">
-        {/* ヘッダーエリア */}
+        {/* ヘッダー */}
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <h1 className="text-2xl font-bold">📊 勤怠支援アプリ</h1>
@@ -85,7 +102,7 @@ export default function StaffDashboard() {
           </button>
         </div>
 
-        {/* モード切り替え */}
+        {/* 登録モード切替 */}
         <div className="flex flex-wrap gap-4 mt-2">
           <button
             onClick={() => setMode("actual")}
@@ -105,7 +122,7 @@ export default function StaffDashboard() {
           </button>
         </div>
 
-        {/* 実績登録 */}
+        {/* 実績登録フォーム */}
         {mode === "actual" && (
           <div className="mt-6 space-y-4">
             <p className="font-semibold text-gray-700">🎯 本日の出勤実績を記録:</p>
@@ -119,13 +136,13 @@ export default function StaffDashboard() {
           </div>
         )}
 
-        {/* 計画登録 */}
+        {/* 計画登録フォーム */}
         {mode === "plan" && (
           <div className="mt-6 space-y-4">
             <p className="font-semibold text-gray-700">📝 出勤予定の登録:</p>
 
             <div>
-              <label className="block text-sm font-medium mb-1">📅 出勤日を選択（明日以降）</label>
+              <label className="block text-sm font-medium mb-1">📅 出勤日（明日以降）</label>
               <input
                 type="date"
                 value={selectedPlanDate}
@@ -146,19 +163,13 @@ export default function StaffDashboard() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">💼 勤務指定（任意）</label>
-              <select
-                value={workCode}
-                onChange={(e) => setWorkCode(e.target.value)}
-                className="border rounded px-2 py-1"
-              >
-                <option value="">選択してください</option>
-                {Object.entries(workCodeMaster).map(([code, time]) => (
-                  <option key={code} value={code}>
-                    {code}（{time}）
-                  </option>
-                ))}
-              </select>
+              <label className="block text-sm font-medium mb-1">💼 勤務指定</label>
+              <input
+                type="text"
+                readOnly
+                value={workCode || "（指定なし）"}
+                className="border rounded px-2 py-1 bg-gray-100"
+              />
             </div>
 
             <button
