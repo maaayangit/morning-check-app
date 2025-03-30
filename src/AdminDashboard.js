@@ -4,10 +4,16 @@ import React, { useState } from "react";
 export default function AdminDashboard() {
   const [csvFile, setCsvFile] = useState(null);
   const [schedulePreview, setSchedulePreview] = useState([]);
-  const [showPreview, setShowPreview] = useState(true); // ← 表示切替状態を追加！
+  const [showPreview, setShowPreview] = useState(true);
+  const [uploadedFileName, setUploadedFileName] = useState(""); // ← ファイル名
+  const [lastUploadTime, setLastUploadTime] = useState(null);   // ← アップロード時刻
 
   const handleFileChange = (e) => {
-    setCsvFile(e.target.files[0]);
+    const file = e.target.files[0];
+    setCsvFile(file);
+    if (file) {
+      setUploadedFileName(file.name); // ← ファイル名を保存
+    }
   };
 
   const handleUpload = () => {
@@ -38,6 +44,17 @@ export default function AdminDashboard() {
           .then((res) => {
             console.log("APIレスポンス:", res);
             alert(res.message);
+
+            // アップロード時間を保存
+            const now = new Date();
+            const formatted = now.toLocaleString("ja-JP", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+            setLastUploadTime(formatted);
           })
           .catch((err) => {
             console.error("送信エラー:", err);
@@ -57,9 +74,17 @@ export default function AdminDashboard() {
         <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 rounded mt-2">
           アップロード
         </button>
+
+        {/* ✅ ファイル名・日時を表示 */}
+        {uploadedFileName && (
+          <p className="text-sm text-gray-600 mt-2">📄 アップロード済みファイル: {uploadedFileName}</p>
+        )}
+        {lastUploadTime && (
+          <p className="text-sm text-gray-500">🕒 最終アップロード: {lastUploadTime}</p>
+        )}
       </div>
 
-      {/* ✅ 表示切り替えラジオ */}
+      {/* ✅ 表示切り替え */}
       {schedulePreview.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
@@ -84,7 +109,6 @@ export default function AdminDashboard() {
             </label>
           </div>
 
-          {/* ✅ CSVプレビュー */}
           {showPreview && (
             <div className="bg-white shadow rounded-xl p-4">
               <h2 className="font-semibold mb-2">CSVプレビュー</h2>
