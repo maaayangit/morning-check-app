@@ -12,7 +12,7 @@ export default function StaffDashboard() {
     const time = now.toTimeString().slice(0, 5);
 
     const payload = {
-      user_id: 1, // FIXME: 実際のログインユーザーに
+      user_id: 1, // FIXME: 実際のログインユーザーに変更
       date: today,
       login_time: time,
     };
@@ -30,18 +30,12 @@ export default function StaffDashboard() {
   return (
     <div className="min-h-screen bg-gray-100 p-6 space-y-6">
       <div className="bg-white shadow rounded-xl p-6 space-y-4">
-        {/* ヘッダー＋右上ホームボタン */}
+        {/* ✅ ヘッダーエリア */}
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-xl font-bold flex items-center space-x-2">
-              <span>🧑‍💼 勤怠支援アプリ</span>
-              <span className="text-gray-500 text-base">担当者用ダッシュボード</span>
-            </h1>
-            <p className="text-sm text-gray-600">
-              実績または計画を選択して出勤記録を行ってください。
-            </p>
+          <div className="flex items-center space-x-2">
+            <h1 className="text-2xl font-bold">📊 勤怠支援アプリ</h1>
+            <span className="text-gray-500 text-base">担当者用ダッシュボード</span>
           </div>
-
           <button
             onClick={() => navigate("/")}
             className="bg-gray-300 text-sm text-black px-4 py-1 rounded"
@@ -49,8 +43,11 @@ export default function StaffDashboard() {
             ホームに戻る
           </button>
         </div>
+        <p className="text-sm text-gray-600 mt-1">
+          担当者は翌日以降の計画、または当日の実績を入力できます。
+        </p>
 
-        {/* モード切替ボタン */}
+        {/* ✅ モード切替 */}
         <div className="flex flex-wrap gap-4 mt-2">
           <button
             onClick={() => setMode("actual")}
@@ -71,7 +68,7 @@ export default function StaffDashboard() {
           </button>
         </div>
 
-        {/* 実績登録モード */}
+        {/* ✅ 実績登録UI */}
         {mode === "actual" && (
           <div className="mt-6 space-y-4">
             <p className="font-semibold text-gray-700">🎯 本日の出勤実績を記録:</p>
@@ -87,7 +84,7 @@ export default function StaffDashboard() {
           </div>
         )}
 
-        {/* 計画登録モード */}
+        {/* ✅ 計画登録UI（仮） */}
         {mode === "plan" && (
           <div className="mt-6 text-gray-500">
             📅 計画登録フォームはこのあと実装します。
