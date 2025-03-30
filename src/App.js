@@ -10,7 +10,8 @@ import { Helmet } from "react-helmet";
 import AdminDashboard from "./AdminDashboard";
 import StaffDashboard from "./StaffDashboard";
 import ScheduleList from "./ScheduleList";
-import Home from "./pages/Home"; // ホーム画面
+import MissedLoginList from "./MissedLoginList";
+import Home from "./pages/Home";
 
 // ⏰ JSTの日付取得関数
 function getTodayJST() {
@@ -53,18 +54,49 @@ function AdminPage() {
       {/* 管理者ダッシュボード（当日分） */}
       <AdminDashboard today={today} />
 
-      {/* 一覧表示セクション（選択日付） */}
-      <div className="bg-white shadow rounded-xl p-4 space-y-4">
-        <div className="flex items-center flex-wrap gap-2">
-          <span className="font-semibold">📅 一覧表示する日付を選択:</span>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="border rounded px-2 py-1"
-          />
+      {/* 一覧表示セクション（選択日付がある時だけ表示） */}
+      {selectedDate && (
+        <div className="bg-white shadow rounded-xl p-4 space-y-4">
+          <div className="flex items-center flex-wrap gap-2">
+            <span className="font-semibold">📅 一覧表示する日付を選択:</span>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="border rounded px-2 py-1"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            <div className="bg-white shadow rounded-xl p-4">
+              <h2 className="text-lg font-bold mb-2">📋 勤務予定一覧</h2>
+              <ScheduleList selectedDate={selectedDate} />
+            </div>
+
+            <div className="bg-white shadow rounded-xl p-4">
+              <h2 className="text-lg font-bold mb-2">
+                🚨 未ログイン・遅刻者一覧（{selectedDate}）
+              </h2>
+              <MissedLoginList selectedDate={selectedDate} />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* 日付未選択時の入力欄だけ別で表示 */}
+      {!selectedDate && (
+        <div className="bg-white shadow rounded-xl p-4">
+          <div className="flex items-center flex-wrap gap-2">
+            <span className="font-semibold">📅 一覧表示する日付を選択:</span>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="border rounded px-2 py-1"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
