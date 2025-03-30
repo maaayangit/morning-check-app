@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import AdminDashboard from "./AdminDashboard";
 import ScheduleList from "./ScheduleList";
 import MissedLogins from "./MissedLogins";
+import StaffDashboard from "./StaffDashboard"; // ← 上部のimportに追記
 
 function App() {
   const [selectedDate, setSelectedDate] = useState(""); // 📅 日付の状態を追加
@@ -31,8 +32,12 @@ function App() {
             onChange={(e) => setSelectedDate(e.target.value)}
             className="border rounded px-2 py-1"
           /> 
-      </div>
+        </div>
 
+        {/* 🧑 担当者用ダッシュボードをここに表示 */}
+        <div className="ml-4">
+          <StaffDashboard selectedDate={selectedDate} />
+        </div>
       </div>
 
       {/* 📋 勤務予定一覧 & 🚨 未ログイン者一覧（2カラムで並べる） */}
