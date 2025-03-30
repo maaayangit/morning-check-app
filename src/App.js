@@ -24,7 +24,7 @@ function App() {
         <AdminDashboard />
 
         <div>
-          <label className="font-semibold mr-2">表示する日付を選択:</label>
+          <label className="font-semibold mr-2">一覧で表示する日付を選択:</label>
           <input
             type="date"
             value={selectedDate}
