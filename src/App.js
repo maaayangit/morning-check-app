@@ -24,14 +24,15 @@ function App() {
         <AdminDashboard />
 
         <div className="ml-4">
-        　<label className="font-semibold mr-2">一覧で表示する日付を選択:</label>
-      　　<input
+          <label className="font-semibold mr-2">一覧で表示する日付を選択:</label>
+          <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             className="border rounded px-2 py-1"
-        　/>
+          /> 
       </div>
+
       </div>
 
       {/* 📋 勤務予定一覧 & 🚨 未ログイン者一覧（2カラムで並べる） */}
