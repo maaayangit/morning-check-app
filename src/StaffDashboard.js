@@ -10,9 +10,9 @@ export default function StaffDashboard() {
   const [expectedTime, setExpectedTime] = useState("00:00");
   const [workCode, setWorkCode] = useState("");
   const [workCodeMaster, setWorkCodeMaster] = useState({});
+  const [refreshLog, setRefreshLog] = useState(false); // 👈 ログ更新トリガー
   const navigate = useNavigate();
 
-  // 勤務指定を取得
   useEffect(() => {
     if (!userId || !selectedPlanDate) return;
 
@@ -31,7 +31,6 @@ export default function StaffDashboard() {
       });
   }, [selectedPlanDate, userId]);
 
-  // 実績登録
   const handleActualLogin = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -58,7 +57,6 @@ export default function StaffDashboard() {
     setMessage(result.message || "出勤記録を登録しました");
   };
 
-  // 計画登録 + PlanLog 保存
   const handlePlanSubmit = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -82,28 +80,25 @@ export default function StaffDashboard() {
       expected_login_time: expectedTime,
     };
 
-    // スケジュール登録API
-    const res = await fetch("https://fastapi-backend-dot2.onrender.com/update-expected-login", {
+    await fetch("https://fastapi-backend-dot2.onrender.com/update-expected-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    // ログ保存API
     await fetch("https://fastapi-backend-dot2.onrender.com/log-plan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    const result = await res.json();
-    setMessage(result.message || "出勤予定を登録しました");
+    setRefreshLog((prev) => !prev); // 👈 PlanLogList更新トリガー
+    setMessage("出勤予定を登録しました");
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 space-y-6">
       <div className="bg-white shadow rounded-xl p-6 space-y-6">
-        {/* ヘッダー */}
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <h1 className="text-2xl font-bold">📊 勤怠支援アプリ</h1>
@@ -117,7 +112,6 @@ export default function StaffDashboard() {
           </button>
         </div>
 
-        {/* 社員番号入力 */}
         <div className="space-y-2">
           <label className="block font-semibold">👤 社員番号（7桁）を入力してください:</label>
           <input
@@ -129,7 +123,6 @@ export default function StaffDashboard() {
           />
         </div>
 
-        {/* モード切替 */}
         <div className="flex flex-wrap gap-4 mt-4">
           <button
             onClick={() => setMode("actual")}
@@ -149,7 +142,6 @@ export default function StaffDashboard() {
           </button>
         </div>
 
-        {/* 実績登録 */}
         {mode === "actual" && (
           <div className="mt-6 space-y-4">
             <p className="font-semibold text-gray-700">🎯 本日の出勤実績を記録:</p>
@@ -163,7 +155,6 @@ export default function StaffDashboard() {
           </div>
         )}
 
-        {/* 計画登録 */}
         {mode === "plan" && (
           <div className="mt-6 space-y-4">
             <p className="font-semibold text-gray-700">📝 出勤予定の登録:</p>
@@ -211,8 +202,8 @@ export default function StaffDashboard() {
         )}
       </div>
 
-      {/* 📖 出勤予定履歴表示 */}
-      {userId && userId.length === 7 && <PlanLogList userId={userId} />}
+      {/* 出勤予定履歴表示（更新トリガー付き） */}
+      {userId && userId.length === 7 && <PlanLogList userId={userId} refreshTrigger={refreshLog} />}
     </div>
   );
 }

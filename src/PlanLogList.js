@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export default function PlanLogList({ userId }) {
+export default function PlanLogList({ userId, refreshTrigger }) {
   const [logs, setLogs] = useState([]);
   const [error, setError] = useState("");
 
@@ -26,7 +26,7 @@ export default function PlanLogList({ userId }) {
         console.error("取得失敗:", err);
         setError("⛔ データ取得に失敗しました。");
       });
-  }, [userId]);
+  }, [userId, refreshTrigger]); // 👈 ここに refreshTrigger を追加！
 
   return (
     <div className="p-4 bg-white shadow rounded-xl mt-6">
