@@ -4,7 +4,7 @@ import React, { useState } from "react";
 export default function AdminDashboard() {
   const [csvFile, setCsvFile] = useState(null);
   const [schedulePreview, setSchedulePreview] = useState([]);
-  const [showPreview, setShowPreview] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [lastUploadTime, setLastUploadTime] = useState(null);
 
