@@ -8,10 +8,19 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 space-y-6">
-      <h1 className="text-2xl font-bold">📅 勤怠管理ダッシュボード</h1>
+      {/* 🔰 タイトルと説明 */}
+      <div>
+        <h1 className="text-2xl font-bold flex items-center space-x-2">
+          <span>📊 勤怠支援アプリ</span>
+          <span className="text-gray-500 text-base">管理者用ダッシュボード</span>
+        </h1>
+        <p className="text-sm text-gray-600 mt-1">
+          勤務予定CSVをアップロードし、日付ごとの勤務状況を確認できます。
+        </p>
+      </div>
 
-      {/* 📂 CSVアップロード＋📅 日付選択 UI を1つのブロックに */}
-      <div className="pl-6 space-y-4">
+      {/* 📂 CSVアップロードと📅 日付選択 */}
+      <div className="bg-white shadow rounded-xl p-4 space-y-4">
         <AdminDashboard />
 
         <div>
@@ -25,11 +34,16 @@ function App() {
         </div>
       </div>
 
-      {/* 📋 勤務予定一覧（選択された日付に基づく） */}
-      <ScheduleList selectedDate={selectedDate} />
+      {/* 📋 勤務予定一覧 & 🚨 未ログイン者一覧（2カラムで並べる） */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="bg-white shadow rounded-xl p-4">
+          <ScheduleList selectedDate={selectedDate} />
+        </div>
 
-      {/* 🚨 未ログイン・遅刻者一覧（選択された日付に基づく） */}
-      <MissedLogins selectedDate={selectedDate} />
+        <div className="bg-white shadow rounded-xl p-4">
+          <MissedLogins selectedDate={selectedDate} />
+        </div>
+      </div>
     </div>
   );
 }
