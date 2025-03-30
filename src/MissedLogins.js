@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-export default function MissedLogins() {
+export default function MissedLogins({ selectedDate }) {
   const [missedLogins, setMissedLogins] = useState([]);
 
   useEffect(() => {
-    fetch("https://fastapi-backend-dot2.onrender.com/login-check")
+    if (!selectedDate) return;
+
+    fetch(`https://fastapi-backend-dot2.onrender.com/login-check?date=${selectedDate}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("🔍 ログインチェック結果:", data);
@@ -13,11 +15,11 @@ export default function MissedLogins() {
       .catch((err) => {
         console.error("取得失敗:", err);
       });
-  }, []);
+  }, [selectedDate]);
 
   return (
     <div className="bg-white shadow rounded-xl p-4 mt-4">
-      <h2 className="text-lg font-bold mb-2">🚨 未ログイン・遅刻者一覧（本日）</h2>
+      <h2 className="text-lg font-bold mb-2">🚨 未ログイン・遅刻者一覧（{selectedDate || "未選択"}）</h2>
       {missedLogins.length === 0 ? (
         <p>問題のあるユーザーはいません 🎉</p>
       ) : (

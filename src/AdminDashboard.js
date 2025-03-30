@@ -20,15 +20,14 @@ export default function AdminDashboard() {
           user_id: Number(row.user_id),
           username: row.username,
           date: row.date,
-          expected_login_time: row.expected_login_time || null, // ← これを追加！
+          work_code: row.work_code || null,
+          expected_login_time: row.expected_login_time || null,
           login_time: row.login_time || null,
           is_holiday: row.is_holiday === "TRUE" || row.is_holiday === "true",
         }));
-        
   
         setSchedulePreview(data);
   
-        // FastAPI に送信！
         fetch("https://fastapi-backend-dot2.onrender.com/upload-schedule", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -37,15 +36,18 @@ export default function AdminDashboard() {
           .then((res) => res.json())
           .then((res) => {
             console.log("APIレスポンス:", res);
-            alert(res.message); // ← ユーザーにもフィードバック！
+            alert(res.message);
           })
           .catch((err) => {
             console.error("送信エラー:", err);
             alert("送信に失敗しました");
           });
       },
-    });
-  };
+    }); // ← ここでPapa.parse() 終わり
+  
+  }; // ← ❗ handleUpload の閉じ括弧を忘れずに
+  
+    
 
   return (
     <div className="p-4 space-y-6">
@@ -67,6 +69,7 @@ export default function AdminDashboard() {
               <tr>
                 <th className="text-left border px-2 py-1">ユーザー名</th>
                 <th className="text-left border px-2 py-1">日付</th>
+                <th className="text-left border px-2 py-1">勤務指定</th>
                 <th className="text-left border px-2 py-1">予定ログイン</th>
                 <th className="text-left border px-2 py-1">ログイン時刻</th>
                 <th className="text-left border px-2 py-1">休日</th>
@@ -77,6 +80,7 @@ export default function AdminDashboard() {
                 <tr key={idx}>
                   <td className="border px-2 py-1">{row.username}</td>
                   <td className="border px-2 py-1">{row.date}</td>
+                  <td className="border px-2 py-1">{row.work_code || "-"}</td>
                   <td className="border px-2 py-1">{row.expected_login_time || "-"}</td>
                   <td className="border px-2 py-1">{row.login_time || "-"}</td>
                   <td className="border px-2 py-1">{row.is_holiday ? "✅" : "-"}</td>
