@@ -74,6 +74,10 @@ export default function StaffDashboard() {
     const result = await res.json();
     setMessage(result.message || "出勤記録を登録しました");
     setRefreshLog((prev) => !prev); // ✅ 履歴更新
+
+    // 🔽 ここでメッセージを3秒後に消す
+    setTimeout(() => setMessage(""), 3000);
+
   };
 
   // ✅ 計画登録
