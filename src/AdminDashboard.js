@@ -5,15 +5,13 @@ export default function AdminDashboard() {
   const [csvFile, setCsvFile] = useState(null);
   const [schedulePreview, setSchedulePreview] = useState([]);
   const [showPreview, setShowPreview] = useState(true);
-  const [uploadedFileName, setUploadedFileName] = useState(""); // ← ファイル名
-  const [lastUploadTime, setLastUploadTime] = useState(null);   // ← アップロード時刻
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const [lastUploadTime, setLastUploadTime] = useState(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setCsvFile(file);
-    if (file) {
-      setUploadedFileName(file.name); // ← ファイル名を保存
-    }
+    // ✅ ファイル選択時点では表示しない
   };
 
   const handleUpload = () => {
@@ -45,7 +43,7 @@ export default function AdminDashboard() {
             console.log("APIレスポンス:", res);
             alert(res.message);
 
-            // アップロード時間を保存
+            // ✅ アップロード完了後にファイル名と時刻を保存
             const now = new Date();
             const formatted = now.toLocaleString("ja-JP", {
               year: "numeric",
@@ -54,6 +52,7 @@ export default function AdminDashboard() {
               hour: "2-digit",
               minute: "2-digit",
             });
+            setUploadedFileName(csvFile.name);
             setLastUploadTime(formatted);
           })
           .catch((err) => {
@@ -75,7 +74,6 @@ export default function AdminDashboard() {
           アップロード
         </button>
 
-        {/* ✅ ファイル名・日時を表示 */}
         {uploadedFileName && (
           <p className="text-sm text-gray-600 mt-2">📄 アップロード済みファイル: {uploadedFileName}</p>
         )}
@@ -84,7 +82,6 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* ✅ 表示切り替え */}
       {schedulePreview.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
