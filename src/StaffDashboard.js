@@ -13,7 +13,6 @@ export default function StaffDashboard() {
   const [refreshLog, setRefreshLog] = useState(false); // ログ更新トリガー
   const navigate = useNavigate();
 
-  // 勤務指定の取得
   useEffect(() => {
     if (!userId || !selectedPlanDate) return;
 
@@ -34,7 +33,7 @@ export default function StaffDashboard() {
       });
   }, [selectedPlanDate, userId]);
 
-  // 実績登録
+  // ✅ 実績登録
   const handleActualLogin = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -59,9 +58,10 @@ export default function StaffDashboard() {
 
     const result = await res.json();
     setMessage(result.message || "出勤記録を登録しました");
+    setRefreshLog((prev) => !prev); // 🔁 出勤実績登録後も履歴更新
   };
 
-  // 計画登録
+  // ✅ 計画登録
   const handlePlanSubmit = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -97,7 +97,7 @@ export default function StaffDashboard() {
       body: JSON.stringify(payload),
     });
 
-    setRefreshLog((prev) => !prev); // 🔁 PlanLogList に更新トリガー
+    setRefreshLog((prev) => !prev);
     setMessage("出勤予定を登録しました");
   };
 
@@ -212,7 +212,7 @@ export default function StaffDashboard() {
         )}
       </div>
 
-      {/* 出勤予実履歴（再読み込みトリガーあり） */}
+      {/* 出勤予実履歴表示 */}
       {userId && userId.length === 7 && (
         <PlanLogList userId={userId} refreshTrigger={refreshLog} key={refreshLog} />
       )}
