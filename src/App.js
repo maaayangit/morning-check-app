@@ -86,7 +86,10 @@ function StaffPage() {
       <Helmet><title>勤怠支援アプリ - 担当者</title></Helmet>
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">🧑 担当者用ダッシュボード</h1>
+          <h1 className="text-2xl font-bold flex items-center space-x-2">
+            <span>📊 勤怠支援アプリ</span>
+            <span className="text-gray-500 text-base">担当者用ダッシュボード</span>
+          </h1>
           <p className="text-sm text-gray-600">
             担当者は日付を選択して予定ログイン時刻を入力できます。
           </p>
