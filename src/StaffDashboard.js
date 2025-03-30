@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function StaffDashboard() {
+  const [userId, setUserId] = useState(""); // ← 7桁社員番号
   const [mode, setMode] = useState("");
   const [message, setMessage] = useState("");
   const [selectedPlanDate, setSelectedPlanDate] = useState("");
   const [expectedTime, setExpectedTime] = useState("00:00");
   const [workCode, setWorkCode] = useState("");
   const [workCodeMaster, setWorkCodeMaster] = useState({});
-  const userId = 1; // FIXME: ログインユーザーのIDを設定
   const navigate = useNavigate();
 
-  // 🔁 選択した日付に応じて勤務指定を取得
+  // 🔁 勤務指定を取得（社員番号と日付に基づく）
   useEffect(() => {
-    if (!selectedPlanDate) return;
+    if (!userId || !selectedPlanDate) return;
 
     fetch(
       `https://fastapi-backend-dot2.onrender.com/work-code?user_id=${userId}&date=${selectedPlanDate}`
@@ -22,24 +22,29 @@ export default function StaffDashboard() {
       .then((data) => {
         setWorkCode(data.work_code || "");
         setWorkCodeMaster({
-            "★07A": "07:00",
-            "★08A": "08:00",
-            "★11A": "11:00",
+          "★07A": "07:00",
+          "★08A": "08:00",
+          "★11A": "11:00",
         });
       })
       .catch((err) => {
         console.error("勤務指定の取得に失敗:", err);
       });
-  }, [selectedPlanDate]);
+  }, [selectedPlanDate, userId]);
 
   // ✅ 実績登録
   const handleActualLogin = async () => {
+    if (!userId || userId.length !== 7) {
+      setMessage("⛔ 正しい7桁の社員番号を入力してください");
+      return;
+    }
+
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
     const time = now.toTimeString().slice(0, 5);
 
     const payload = {
-      user_id: userId,
+      user_id: Number(userId),
       date: today,
       login_time: time,
     };
@@ -56,6 +61,11 @@ export default function StaffDashboard() {
 
   // ✅ 計画登録
   const handlePlanSubmit = async () => {
+    if (!userId || userId.length !== 7) {
+      setMessage("⛔ 正しい7桁の社員番号を入力してください");
+      return;
+    }
+
     if (!selectedPlanDate || !expectedTime) {
       setMessage("⛔ 日付と出勤予定時刻を入力してください");
       return;
@@ -70,7 +80,7 @@ export default function StaffDashboard() {
     }
 
     const payload = {
-      user_id: userId,
+      user_id: Number(userId),
       date: selectedPlanDate,
       expected_login_time: expectedTime,
     };
@@ -87,7 +97,7 @@ export default function StaffDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 space-y-6">
-      <div className="bg-white shadow rounded-xl p-6 space-y-4">
+      <div className="bg-white shadow rounded-xl p-6 space-y-6">
         {/* ヘッダー */}
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -102,8 +112,20 @@ export default function StaffDashboard() {
           </button>
         </div>
 
+        {/* 社員番号入力 */}
+        <div className="space-y-2">
+          <label className="block font-semibold">👤 社員番号（7桁）を入力してください:</label>
+          <input
+            type="text"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+            placeholder="例: 1234567"
+            className="border rounded px-3 py-1 w-40"
+          />
+        </div>
+
         {/* 登録モード切替 */}
-        <div className="flex flex-wrap gap-4 mt-2">
+        <div className="flex flex-wrap gap-4 mt-4">
           <button
             onClick={() => setMode("actual")}
             className={`px-4 py-2 rounded font-semibold ${
