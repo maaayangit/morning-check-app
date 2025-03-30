@@ -53,7 +53,6 @@ export default function AdminDashboard() {
             alert(res.message);
 
             const now = new Date().toLocaleString();
-
             localStorage.setItem("uploadedFileName", csvFile.name);
             localStorage.setItem("lastUploadTime", now);
 
@@ -159,8 +158,8 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* 🚨 未ログイン・遅刻者一覧を追加表示 */}
-      <MissedLoginList />
+      {/* 🚨 未ログイン・遅刻者一覧（当日）を表示 */}
+      <MissedLoginList selectedDate={new Date().toISOString().slice(0, 10)} />
     </div>
   );
 }
