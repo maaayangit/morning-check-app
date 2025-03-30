@@ -1,3 +1,4 @@
+// StaffDashboard.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -5,25 +6,25 @@ export default function StaffDashboard() {
   const [mode, setMode] = useState("");
   const [message, setMessage] = useState("");
   const [selectedPlanDate, setSelectedPlanDate] = useState("");
-  const [expectedTime, setExpectedTime] = useState("");
+  const [expectedTime, setExpectedTime] = useState("00:00");
   const [workCode, setWorkCode] = useState("");
   const navigate = useNavigate();
 
-  // 📌 勤務指定 → 出勤指定時刻のマスター（仮にフロントに定義）
+  // 📌 勤務指定 → 出勤指定時刻マスター（仮にフロントに定義）
   const workCodeMaster = {
     "★07A": "07:00",
     "★08A": "08:00",
     "★11A": "11:00",
   };
 
-  // ✅ 実績登録の送信処理
+  // ✅ 実績登録送信
   const handleActualLogin = async () => {
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
     const time = now.toTimeString().slice(0, 5);
 
     const payload = {
-      user_id: 1, // FIXME: 実ユーザーに変更
+      user_id: 1, // FIXME: ログインユーザーIDに差し替え
       date: today,
       login_time: time,
     };
@@ -38,19 +39,16 @@ export default function StaffDashboard() {
     setMessage(result.message || "出勤記録を登録しました");
   };
 
-  // ✅ 計画登録の送信処理
+  // ✅ 計画登録送信
   const handlePlanSubmit = async () => {
     if (!selectedPlanDate || !expectedTime) {
       setMessage("⛔ 日付と出勤予定時刻を入力してください");
       return;
     }
 
-    // バリデーション：勤務指定との比較
     const requiredTime = workCodeMaster[workCode];
     if (requiredTime && expectedTime > requiredTime) {
-      setMessage(
-        `⛔ 勤務指定 (${workCode}) の ${requiredTime} より遅い出勤は登録できません`
-      );
+      setMessage(`⛔ 勤務指定 (${workCode}) の ${requiredTime} より遅い出勤は登録できません`);
       return;
     }
 
@@ -155,9 +153,11 @@ export default function StaffDashboard() {
                 className="border rounded px-2 py-1"
               >
                 <option value="">選択してください</option>
-                <option value="★07A">★07A（07:00）</option>
-                <option value="★08A">★08A（08:00）</option>
-                <option value="★11A">★11A（11:00）</option>
+                {Object.entries(workCodeMaster).map(([code, time]) => (
+                  <option key={code} value={code}>
+                    {code}（{time}）
+                  </option>
+                ))}
               </select>
             </div>
 
