@@ -105,7 +105,6 @@ export default function AdminDashboard({ today }) {
 
       {/* 🚨 当日分の未ログイン・遅刻一覧 */}
       <div className="bg-white shadow rounded-xl p-4">
-        <h2 className="text-lg font-bold mb-2">🚨 未ログイン・遅刻者一覧（{today}）</h2>
         <MissedLoginList selectedDate={today} />
       </div>
 
