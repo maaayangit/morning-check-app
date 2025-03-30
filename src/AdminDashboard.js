@@ -11,6 +11,7 @@ export default function AdminDashboard({ today }) {
   const [uploadedFileName, setUploadedFileName] = useState(null);
   const [lastUploadTime, setLastUploadTime] = useState(null);
 
+  // ⏱ ローカルストレージからファイル名・時刻読み込み
   useEffect(() => {
     const storedName = localStorage.getItem("uploadedFileName");
     const storedTime = localStorage.getItem("lastUploadTime");
@@ -78,7 +79,7 @@ export default function AdminDashboard({ today }) {
 
   return (
     <div className="space-y-6">
-      {/* CSVアップロード */}
+      {/* 📂 CSVアップロード */}
       <div className="bg-white shadow rounded-xl p-4 space-y-4">
         <h2 className="text-lg font-bold">📋 勤務予定CSVアップロード</h2>
         <p className="text-sm text-gray-600">CSVファイルを選択してアップロードしてください。</p>
@@ -102,12 +103,13 @@ export default function AdminDashboard({ today }) {
         )}
       </div>
 
-      {/* 未ログイン・遅刻者（当日分） */}
-      <div className="bg-white shadow rounded-xl p-4 space-y-2">
+      {/* 🚨 当日分の未ログイン・遅刻一覧 */}
+      <div className="bg-white shadow rounded-xl p-4">
+        <h2 className="text-lg font-bold mb-2">🚨 未ログイン・遅刻者一覧（{today}）</h2>
         <MissedLoginList selectedDate={today} />
       </div>
 
-      {/* プレビュー（任意で表示） */}
+      {/* 🖥️ CSVプレビュー表示（任意） */}
       {schedulePreview.length > 0 && (
         <div className="bg-white shadow rounded-xl p-4 space-y-4">
           <h2 className="font-semibold">CSVプレビュー</h2>

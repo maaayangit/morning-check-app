@@ -10,14 +10,14 @@ import { Helmet } from "react-helmet";
 import AdminDashboard from "./AdminDashboard";
 import StaffDashboard from "./StaffDashboard";
 import ScheduleList from "./ScheduleList";
-import MissedLoginList from "./MissedLoginList";
-import Home from "./pages/Home";
+import Home from "./pages/Home"; // ホーム画面
 
+// ⏰ JSTの日付取得関数
 function getTodayJST() {
   const jstDate = new Date(
     new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" })
   );
-  return jstDate.toISOString().slice(0, 10); // YYYY-MM-DD
+  return jstDate.toISOString().slice(0, 10);
 }
 
 function AdminPage() {
@@ -31,6 +31,7 @@ function AdminPage() {
         <title>勤怠支援アプリ - 管理者</title>
       </Helmet>
 
+      {/* ヘッダー */}
       <div className="flex justify-between items-start flex-wrap gap-2">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold flex items-center space-x-2">
@@ -49,10 +50,10 @@ function AdminPage() {
         </button>
       </div>
 
-      {/* 管理者機能全体を渡す */}
+      {/* 管理者ダッシュボード（当日分） */}
       <AdminDashboard today={today} />
 
-      {/* 一覧表示日付の選択と結果表示 */}
+      {/* 一覧表示セクション（選択日付） */}
       <div className="bg-white shadow rounded-xl p-4 space-y-4">
         <div className="flex items-center flex-wrap gap-2">
           <span className="font-semibold">📅 一覧表示する日付を選択:</span>
@@ -70,10 +71,7 @@ function AdminPage() {
             <ScheduleList selectedDate={selectedDate} />
           </div>
 
-          <div className="bg-white shadow rounded-xl p-4">
-            <h2 className="text-lg font-bold mb-2">🚨 未ログイン・遅刻者一覧（{selectedDate || "未選択"}）</h2>
-            <MissedLoginList selectedDate={selectedDate} />
-          </div>
+          {/* ❌ 不要になった MissedLoginList は削除済み ✅ */}
         </div>
       </div>
     </div>
