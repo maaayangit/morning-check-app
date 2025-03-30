@@ -1,3 +1,4 @@
+// src/StaffDashboard.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PlanLogList from "./PlanLogList";
@@ -15,10 +16,7 @@ export default function StaffDashboard() {
 
   useEffect(() => {
     if (!userId || !selectedPlanDate) return;
-
-    fetch(
-      `https://fastapi-backend-dot2.onrender.com/work-code?user_id=${userId}&date=${selectedPlanDate}`
-    )
+    fetch(`https://fastapi-backend-dot2.onrender.com/work-code?user_id=${userId}&date=${selectedPlanDate}`)
       .then((res) => res.json())
       .then((data) => {
         setWorkCode(data.work_code || "");
@@ -28,12 +26,9 @@ export default function StaffDashboard() {
           "★11A": "11:00",
         });
       })
-      .catch((err) => {
-        console.error("勤務指定の取得に失敗:", err);
-      });
+      .catch((err) => console.error("勤務指定の取得に失敗:", err));
   }, [selectedPlanDate, userId]);
 
-  // ✅ 実績登録（出勤予定があるか確認）
   const handleActualLogin = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -44,30 +39,18 @@ export default function StaffDashboard() {
     const today = now.toISOString().slice(0, 10);
     const time = now.toTimeString().slice(0, 5);
 
-    // 出勤予定があるか確認
-    const checkRes = await fetch(
-      `https://fastapi-backend-dot2.onrender.com/schedules?date=${today}`
-    );
+    const checkRes = await fetch(`https://fastapi-backend-dot2.onrender.com/schedules?date=${today}`);
     const scheduleData = await checkRes.json();
 
-    const hasTodayPlan = scheduleData.some(
-      (item) => String(item.user_id) === String(userId)
-    );
+    const hasTodayPlan = scheduleData.some((item) => String(item.user_id) === String(userId));
 
     if (!hasTodayPlan) {
       setMessage("⛔ 計画登録日以外なので登録できません！");
-
-      // 🔽 ここでメッセージを3秒後に消す
       setTimeout(() => setMessage(""), 3000);
-
       return;
     }
 
-    const payload = {
-      user_id: Number(userId),
-      date: today,
-      login_time: time,
-    };
+    const payload = { user_id: Number(userId), date: today, login_time: time };
 
     const res = await fetch("https://fastapi-backend-dot2.onrender.com/update-login", {
       method: "POST",
@@ -77,14 +60,10 @@ export default function StaffDashboard() {
 
     const result = await res.json();
     setMessage(result.message || "出勤記録を登録しました");
-    setRefreshLog((prev) => !prev); // ✅ 履歴更新
-
-    // 🔽 ここでメッセージを3秒後に消す
+    setRefreshLog((prev) => !prev);
     setTimeout(() => setMessage(""), 3000);
-
   };
 
-  // ✅ 計画登録
   const handlePlanSubmit = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -120,129 +99,121 @@ export default function StaffDashboard() {
       body: JSON.stringify(payload),
     });
 
-    setRefreshLog((prev) => !prev); // 🔁 更新トリガー
+    setRefreshLog((prev) => !prev);
     setMessage("出勤予定を登録しました");
-
-
-    // 🔽 ここでメッセージを3秒後に消す
     setTimeout(() => setMessage(""), 3000);
-
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 space-y-6">
-      <div className="bg-white shadow rounded-xl p-6 space-y-6">
-        {/* ヘッダー */}
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold">📊 勤怠支援アプリ</h1>
-            <span className="text-gray-500 text-base">担当者用ダッシュボード</span>
+    <div className="min-h-screen bg-[#f5f5f7] p-6 flex flex-col items-center">
+      <div className="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6 space-y-6">
+        <div className="flex justify-between items-center border-b pb-4">
+          <div className="space-y-1">
+            <h1 className="text-xl font-bold text-gray-900">勤怠支援アプリ</h1>
+            <p className="text-gray-500 text-sm">担当者用ダッシュボード</p>
           </div>
           <button
             onClick={() => navigate("/")}
-            className="bg-gray-300 text-sm text-black px-4 py-1 rounded"
+            className="text-sm text-gray-600 border border-gray-300 rounded px-3 py-1 hover:bg-gray-100"
           >
             ホームに戻る
           </button>
         </div>
 
-        {/* 社員番号入力 */}
-        <div className="space-y-2">
-          <label className="block font-semibold">👤 社員番号（7桁）を入力してください:</label>
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">👤 社員番号（7桁）</label>
           <input
             type="text"
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
             placeholder="例: 1234567"
-            className="border rounded px-3 py-1 w-40"
+            className="w-40 border px-3 py-2 rounded focus:outline-none focus:ring"
           />
         </div>
 
-        {/* モード切替 */}
-        <div className="flex flex-wrap gap-4 mt-4">
+        <div className="flex gap-4">
           <button
             onClick={() => setMode("actual")}
-            className={`px-4 py-2 rounded font-semibold ${
-              mode === "actual" ? "bg-blue-500 text-white" : "bg-gray-200"
+            className={`flex-1 py-2 rounded font-semibold ${
+              mode === "actual" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"
             }`}
           >
             実績登録
           </button>
           <button
             onClick={() => setMode("plan")}
-            className={`px-4 py-2 rounded font-semibold ${
-              mode === "plan" ? "bg-blue-500 text-white" : "bg-gray-200"
+            className={`flex-1 py-2 rounded font-semibold ${
+              mode === "plan" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"
             }`}
           >
             計画登録
           </button>
         </div>
 
-        {/* 実績登録フォーム */}
         {mode === "actual" && (
-          <div className="mt-6 space-y-4">
-            <p className="font-semibold text-gray-700">🎯 本日の出勤実績を記録:</p>
+          <div className="space-y-4">
+            <p className="text-gray-700 font-semibold">🎯 本日の出勤実績を記録</p>
             <button
               onClick={handleActualLogin}
-              className="bg-green-600 text-white px-6 py-2 rounded shadow"
+              className="bg-green-600 hover:bg-green-700 text-white w-full py-2 rounded shadow"
             >
               🎯 出勤ボタン
             </button>
-            {message && <p className="text-green-700 font-semibold mt-2">{message}</p>}
+            {message && <p className="text-green-600 text-sm font-medium">{message}</p>}
           </div>
         )}
 
-        {/* 計画登録フォーム */}
         {mode === "plan" && (
-          <div className="mt-6 space-y-4">
-            <p className="font-semibold text-gray-700">📝 出勤予定の登録:</p>
+          <div className="space-y-4">
+            <p className="text-gray-700 font-semibold">📝 出勤予定の登録</p>
 
             <div>
-              <label className="block text-sm font-medium mb-1">📅 出勤日（明日以降）</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">📅 出勤日</label>
               <input
                 type="date"
                 value={selectedPlanDate}
                 min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)}
                 onChange={(e) => setSelectedPlanDate(e.target.value)}
-                className="border rounded px-2 py-1"
+                className="border px-3 py-2 rounded w-full"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">⏰ 出勤予定時刻</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">⏰ 出勤予定時刻</label>
               <input
                 type="time"
                 value={expectedTime}
                 onChange={(e) => setExpectedTime(e.target.value)}
-                className="border rounded px-2 py-1"
+                className="border px-3 py-2 rounded w-full"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">💼 勤務指定</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">💼 勤務指定</label>
               <input
                 type="text"
                 readOnly
                 value={workCode || "（指定なし）"}
-                className="border rounded px-2 py-1 bg-gray-100"
+                className="border px-3 py-2 rounded bg-gray-100 w-full text-gray-700"
               />
             </div>
 
             <button
               onClick={handlePlanSubmit}
-              className="bg-blue-600 text-white px-6 py-2 rounded shadow"
+              className="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded shadow"
             >
               📝 出勤予定を登録する
             </button>
 
-            {message && <p className="text-green-700 font-semibold mt-2">{message}</p>}
+            {message && <p className="text-green-600 text-sm font-medium">{message}</p>}
           </div>
         )}
       </div>
 
-      {/* 出勤予実履歴 */}
       {userId && userId.length === 7 && (
-        <PlanLogList userId={userId} refreshTrigger={refreshLog} key={refreshLog} />
+        <div className="w-full max-w-2xl mt-6">
+          <PlanLogList userId={userId} refreshTrigger={refreshLog} key={refreshLog} />
+        </div>
       )}
     </div>
   );
