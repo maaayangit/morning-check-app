@@ -64,15 +64,6 @@ function AdminPage() {
             className="border rounded px-2 py-1"
           />
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-2">
-          <div className="bg-white shadow rounded-xl p-4">
-            <h2 className="text-lg font-bold mb-2">📋 勤務予定一覧</h2>
-            <ScheduleList selectedDate={selectedDate} />
-          </div>
-
-          {/* ❌ 不要になった MissedLoginList は削除済み ✅ */}
-        </div>
       </div>
     </div>
   );
