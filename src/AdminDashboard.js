@@ -1,6 +1,6 @@
 import Papa from "papaparse";
 import React, { useState, useEffect } from "react";
-import MissedLoginList from "./MissedLoginList"; // 🔁 追加
+import MissedLoginList from "./MissedLoginList";
 
 export default function AdminDashboard() {
   const [csvFile, setCsvFile] = useState(null);

@@ -5,8 +5,8 @@ import { Helmet } from "react-helmet";
 import AdminDashboard from "./AdminDashboard";
 import StaffDashboard from "./StaffDashboard";
 import ScheduleList from "./ScheduleList";
-import MissedLogins from "./MissedLogins";
-import Home from "./pages/Home"; // 🔁 Home を pages フォルダから読み込むように変更
+import MissedLoginList from "./MissedLoginList"; // ✅ 統一された名前
+import Home from "./pages/Home";
 
 function AdminPage() {
   const [selectedDate, setSelectedDate] = useState("");
@@ -53,7 +53,7 @@ function AdminPage() {
         </div>
 
         <div className="bg-white shadow rounded-xl p-4">
-          <MissedLogins selectedDate={selectedDate} />
+          <MissedLoginList selectedDate={selectedDate} /> {/* ✅ 名前を統一 */}
         </div>
       </div>
     </div>
