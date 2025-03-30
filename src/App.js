@@ -11,8 +11,9 @@ function App() {
       <h1 className="text-2xl font-bold">📅 勤怠管理ダッシュボード</h1>
 
       {/* 📂 CSVアップロード＋📅 日付選択 UI を1つのブロックに */}
-      <div className="bg-white shadow rounded-xl p-4 space-y-4">
+      <div className="pl-6 space-y-4">
         <AdminDashboard />
+
         <div>
           <label className="font-semibold mr-2">表示する日付を選択:</label>
           <input
@@ -34,4 +35,3 @@ function App() {
 }
 
 export default App;
-
