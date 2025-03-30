@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import AdminDashboard from "./AdminDashboard";
@@ -26,7 +26,7 @@ function Home() {
 }
 
 function AdminPage() {
-  const [selectedDate, setSelectedDate] = React.useState("");
+  const [selectedDate, setSelectedDate] = useState("");
   const navigate = useNavigate();
 
   return (
@@ -79,11 +79,17 @@ function AdminPage() {
 
 function StaffPage() {
   const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState("");
+  const [mode, setMode] = useState("actual");
+  const [planDate, setPlanDate] = useState("");
+  const [planTime, setPlanTime] = useState("");
+  const [validationError, setValidationError] = useState("");
 
-  // 実績入力関数（仮実装）
   const handleRecordLogin = () => {
-    const today = new Date().toISOString().split("T")[0];
-    const currentTime = new Date().toTimeString().slice(0, 5);
+    const JSTOffset = 9 * 60 * 60 * 1000;
+    const now = new Date(Date.now() + JSTOffset);
+    const today = now.toISOString().split("T")[0];
+    const currentTime = now.toTimeString().slice(0, 5);
 
     fetch("https://fastapi-backend-dot2.onrender.com/record-login", {
       method: "POST",
@@ -91,8 +97,36 @@ function StaffPage() {
       body: JSON.stringify({ date: today, login_time: currentTime }),
     })
       .then((res) => res.json())
-      .then((res) => alert(res.message || "実績を登録しました"))
-      .catch((err) => alert("送信エラー"));
+      .then((res) => {
+        setSuccessMessage(res.message || "実績を登録しました");
+        setTimeout(() => setSuccessMessage(""), 3000);
+      })
+      .catch(() => {
+        setSuccessMessage("送信エラー");
+        setTimeout(() => setSuccessMessage(""), 3000);
+      });
+  };
+
+  const handlePlanTimeChange = (value) => {
+    setPlanTime(value);
+    setValidationError("");
+
+    if (planDate && value) {
+      fetch(`https://fastapi-backend-dot2.onrender.com/get-work-code?date=${planDate}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const workCode = data.work_code;
+          const planMinutes = parseInt(value.split(":")[0]) * 60 + parseInt(value.split(":")[1]);
+          let limitMinutes = null;
+
+          if (workCode === "★07A") limitMinutes = 7 * 60;
+          if (workCode === "★11A") limitMinutes = 11 * 60;
+
+          if (limitMinutes !== null && planMinutes >= limitMinutes) {
+            setValidationError(`勤務指定(${workCode})より遅い時刻は登録できません。`);
+          }
+        });
+    }
   };
 
   return (
@@ -117,17 +151,62 @@ function StaffPage() {
       </div>
 
       <div className="bg-white shadow rounded-xl p-4 space-y-6">
-        <StaffDashboard />
-
-        {/* 実績入力ボタン */}
-        <div className="text-center">
+        <div className="flex justify-center gap-4">
           <button
-            onClick={handleRecordLogin}
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded"
+            onClick={() => setMode("actual")}
+            className={`px-4 py-2 rounded font-semibold ${mode === "actual" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
           >
-            🎯 今日のログイン実績を記録する
+            実績入力
+          </button>
+          <button
+            onClick={() => setMode("plan")}
+            className={`px-4 py-2 rounded font-semibold ${mode === "plan" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+          >
+            計画入力
           </button>
         </div>
+
+        {mode === "actual" && (
+          <div className="text-center">
+            <button
+              onClick={handleRecordLogin}
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded"
+            >
+              🎯 今日のログイン実績を記録する
+            </button>
+            {successMessage && (
+              <p className="mt-4 text-green-600 font-medium">{successMessage}</p>
+            )}
+          </div>
+        )}
+
+        {mode === "plan" && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">📝 ログイン計画入力</h2>
+            <div className="space-y-2">
+              <label className="block font-semibold">対象日を選択（翌日以降のみ）:</label>
+              <input
+                type="date"
+                value={planDate}
+                onChange={(e) => setPlanDate(e.target.value)}
+                className="border rounded px-2 py-1"
+                min={new Date(Date.now() + 86400000).toISOString().split("T")[0]}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block font-semibold">出勤予定時刻を入力:</label>
+              <input
+                type="time"
+                value={planTime}
+                onChange={(e) => handlePlanTimeChange(e.target.value)}
+                className="border rounded px-2 py-1"
+              />
+              {validationError && (
+                <p className="text-red-600 text-sm font-medium">{validationError}</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
