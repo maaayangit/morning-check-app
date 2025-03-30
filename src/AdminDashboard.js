@@ -1,4 +1,3 @@
-// src/AdminDashboard.js
 import Papa from "papaparse";
 import React, { useState, useEffect } from "react";
 import MissedLoginList from "./MissedLoginList";
@@ -6,6 +5,7 @@ import MissedLoginList from "./MissedLoginList";
 export default function AdminDashboard() {
   const [csvFile, setCsvFile] = useState(null);
   const [schedulePreview, setSchedulePreview] = useState([]);
+  const [showPreview, setShowPreview] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState(null);
   const [lastUploadTime, setLastUploadTime] = useState(null);
 
@@ -38,6 +38,9 @@ export default function AdminDashboard() {
           is_holiday: row.is_holiday === "TRUE" || row.is_holiday === "true",
         }));
 
+        setSchedulePreview(data);
+        setShowPreview(false);
+
         fetch("https://fastapi-backend-dot2.onrender.com/upload-schedule", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -51,7 +54,6 @@ export default function AdminDashboard() {
             localStorage.setItem("lastUploadTime", now);
             setUploadedFileName(csvFile.name);
             setLastUploadTime(now);
-            setSchedulePreview(data);
           })
           .catch((err) => {
             console.error("送信エラー:", err);
@@ -67,28 +69,31 @@ export default function AdminDashboard() {
     setUploadedFileName(null);
     setLastUploadTime(null);
     setSchedulePreview([]);
+    setShowPreview(false);
     setCsvFile(null);
   };
 
   return (
     <div className="space-y-6">
-      <div className="bg-white shadow rounded-xl p-6 space-y-4">
-        <h2 className="text-lg font-bold flex items-center gap-2">🛠️ 管理者用ダッシュボード</h2>
+      {/* メインカード */}
+      <div className="bg-white rounded-xl shadow p-6 space-y-6">
+        <h2 className="text-xl font-bold flex items-center gap-2">🛠️ 管理者用ダッシュボード</h2>
 
+        {/* CSV アップロード */}
         <div className="space-y-2">
-          <h3 className="font-semibold">🗂️ 勤務予定CSVアップロード</h3>
+          <h3 className="font-semibold flex items-center gap-2">📂 勤務予定CSVアップロード</h3>
           <input
             type="file"
             accept=".csv"
             onChange={handleFileChange}
-            className="border rounded px-2 py-1"
+            className="block border border-gray-300 rounded px-3 py-2"
           />
 
-          <div className="flex gap-3 mt-2">
+          <div className="flex flex-wrap gap-2 mt-2">
             <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 rounded shadow">
               アップロード
             </button>
-            <button onClick={handleReset} className="bg-gray-300 px-4 py-2 rounded shadow">
+            <button onClick={handleReset} className="bg-gray-300 text-black px-4 py-2 rounded">
               リセット
             </button>
           </div>
@@ -102,7 +107,53 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* 🚨 遅刻者一覧 */}
+      {/* 📋 CSV プレビュー表示 */}
+      {schedulePreview.length > 0 && (
+        <div className="bg-white rounded-xl shadow p-6 space-y-4">
+          <div className="flex items-center gap-4">
+            <label className="font-semibold">CSVプレビュー表示:</label>
+            <label className="flex items-center space-x-2">
+              <input type="radio" name="preview" checked={showPreview} onChange={() => setShowPreview(true)} />
+              <span>表示</span>
+            </label>
+            <label className="flex items-center space-x-2">
+              <input type="radio" name="preview" checked={!showPreview} onChange={() => setShowPreview(false)} />
+              <span>非表示</span>
+            </label>
+          </div>
+
+          {showPreview && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border mt-4">
+                <thead>
+                  <tr>
+                    <th className="border px-2 py-1">ユーザー名</th>
+                    <th className="border px-2 py-1">日付</th>
+                    <th className="border px-2 py-1">勤務指定</th>
+                    <th className="border px-2 py-1">予定時刻</th>
+                    <th className="border px-2 py-1">出勤実績</th>
+                    <th className="border px-2 py-1">休日</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {schedulePreview.map((row, idx) => (
+                    <tr key={idx}>
+                      <td className="border px-2 py-1">{row.username}</td>
+                      <td className="border px-2 py-1">{row.date}</td>
+                      <td className="border px-2 py-1">{row.work_code || "-"}</td>
+                      <td className="border px-2 py-1">{row.expected_login_time || "-"}</td>
+                      <td className="border px-2 py-1">{row.login_time || "-"}</td>
+                      <td className="border px-2 py-1">{row.is_holiday ? "✅" : "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 🚨 未ログイン・遅刻者一覧 */}
       <MissedLoginList />
     </div>
   );
