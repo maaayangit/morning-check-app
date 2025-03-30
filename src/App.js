@@ -23,7 +23,7 @@ function App() {
       <div className="bg-white shadow rounded-xl p-4 space-y-4">
         <AdminDashboard />
 
-        <div className="pl-6">
+        <div className="ml-2">
         　<label className="font-semibold mr-2">一覧で表示する日付を選択:</label>
       　　<input
             type="date"
