@@ -56,6 +56,10 @@ export default function StaffDashboard() {
 
     if (!hasTodayPlan) {
       setMessage("⛔ 計画登録日以外なので登録できません！");
+
+      // 🔽 ここでメッセージを3秒後に消す
+      setTimeout(() => setMessage(""), 3000);
+
       return;
     }
 
