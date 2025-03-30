@@ -1,6 +1,6 @@
 // App.js
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 import AdminDashboard from "./AdminDashboard";
 import StaffDashboard from "./StaffDashboard";
 import ScheduleList from "./ScheduleList";
@@ -26,17 +26,26 @@ function Home() {
 
 function AdminPage() {
   const [selectedDate, setSelectedDate] = React.useState("");
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center space-x-2">
-          <span>📊 勤怠支援アプリ</span>
-          <span className="text-gray-500 text-base">管理者用ダッシュボード</span>
-        </h1>
-        <p className="text-sm text-gray-600 mt-1">
-          勤務予定CSVをアップロードしてください。日付ごとの勤務状況を確認できます。
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center space-x-2">
+            <span>📊 勤怠支援アプリ</span>
+            <span className="text-gray-500 text-base">管理者用ダッシュボード</span>
+          </h1>
+          <p className="text-sm text-gray-600 mt-1">
+            勤務予定CSVをアップロードしてください。日付ごとの勤務状況を確認できます。
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/")}
+          className="bg-gray-300 text-sm text-black px-4 py-1 rounded"
+        >
+          ホームに戻る
+        </button>
       </div>
 
       <div className="bg-white shadow rounded-xl p-4 space-y-4">
@@ -66,13 +75,39 @@ function AdminPage() {
   );
 }
 
+function StaffPage() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-6 space-y-4">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold">🧑 担当者用ダッシュボード</h1>
+          <p className="text-sm text-gray-600">
+            担当者は日付を選択して予定ログイン時刻を入力できます。
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/")}
+          className="bg-gray-300 text-sm text-black px-4 py-1 rounded"
+        >
+          ホームに戻る
+        </button>
+      </div>
+      <div className="bg-white shadow rounded-xl p-4">
+        <StaffDashboard />
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/staff" element={<StaffDashboard />} />
+        <Route path="/staff" element={<StaffPage />} />
       </Routes>
     </Router>
   );
