@@ -10,7 +10,7 @@ export default function StaffDashboard() {
   const [expectedTime, setExpectedTime] = useState("00:00");
   const [workCode, setWorkCode] = useState("");
   const [workCodeMaster, setWorkCodeMaster] = useState({});
-  const [refreshLog, setRefreshLog] = useState(false); // ログ更新トリガー
+  const [refreshLog, setRefreshLog] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function StaffDashboard() {
       });
   }, [selectedPlanDate, userId]);
 
-  // ✅ 実績登録
+  // ✅ 実績登録（出勤予定があるか確認）
   const handleActualLogin = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
@@ -43,6 +43,21 @@ export default function StaffDashboard() {
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
     const time = now.toTimeString().slice(0, 5);
+
+    // 出勤予定があるか確認
+    const checkRes = await fetch(
+      `https://fastapi-backend-dot2.onrender.com/schedules?date=${today}`
+    );
+    const scheduleData = await checkRes.json();
+
+    const hasTodayPlan = scheduleData.some(
+      (item) => String(item.user_id) === String(userId)
+    );
+
+    if (!hasTodayPlan) {
+      setMessage("⛔ 登録日以外なので登録できません！");
+      return;
+    }
 
     const payload = {
       user_id: Number(userId),
@@ -58,7 +73,7 @@ export default function StaffDashboard() {
 
     const result = await res.json();
     setMessage(result.message || "出勤記録を登録しました");
-    setRefreshLog((prev) => !prev); // 🔁 出勤実績登録後も履歴更新
+    setRefreshLog((prev) => !prev); // ✅ 履歴更新
   };
 
   // ✅ 計画登録
@@ -97,7 +112,7 @@ export default function StaffDashboard() {
       body: JSON.stringify(payload),
     });
 
-    setRefreshLog((prev) => !prev);
+    setRefreshLog((prev) => !prev); // 🔁 更新トリガー
     setMessage("出勤予定を登録しました");
   };
 
@@ -212,7 +227,7 @@ export default function StaffDashboard() {
         )}
       </div>
 
-      {/* 出勤予実履歴表示 */}
+      {/* 出勤予実履歴 */}
       {userId && userId.length === 7 && (
         <PlanLogList userId={userId} refreshTrigger={refreshLog} key={refreshLog} />
       )}
