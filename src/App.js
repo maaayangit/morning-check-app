@@ -23,15 +23,15 @@ function App() {
       <div className="bg-white shadow rounded-xl p-4 space-y-4">
         <AdminDashboard />
 
-        <div>
-          <label className="font-semibold mr-2">一覧で表示する日付を選択:</label>
-          <input
+        <div className="pl-6">
+        　<label className="font-semibold mr-2">一覧で表示する日付を選択:</label>
+      　　<input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             className="border rounded px-2 py-1"
-          />
-        </div>
+        　/>
+      </div>
       </div>
 
       {/* 📋 勤務予定一覧 & 🚨 未ログイン者一覧（2カラムで並べる） */}
