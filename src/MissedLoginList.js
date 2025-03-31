@@ -1,16 +1,14 @@
 // src/MissedLoginList.js
 import React, { useEffect, useState } from "react";
 
-export default function MissedLoginList() {
+export default function MissedLoginList({ selectedDate }) {
   const [missedLogins, setMissedLogins] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const todayJST = new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" })
-  ).toISOString().slice(0, 10);
-
   useEffect(() => {
-    fetch(`https://fastapi-backend-dot2.onrender.com/login-check?date=${todayJST}`)
+    if (!selectedDate) return;
+
+    fetch(`https://fastapi-backend-dot2.onrender.com/login-check?date=${selectedDate}`)
       .then((res) => res.json())
       .then((data) => {
         setMissedLogins(data.missed_logins || []);
@@ -20,11 +18,11 @@ export default function MissedLoginList() {
         console.error("取得失敗:", err);
         setLoading(false);
       });
-  }, [todayJST]);
+  }, [selectedDate]);
 
   return (
-    <div className="bg-white shadow rounded-xl p-4 mt-4">
-      <h2 className="text-lg font-bold mb-2">🚨 未ログイン・遅刻者一覧（{todayJST}）</h2>
+    <>
+      <h2 className="text-lg font-bold mb-2">🚨 未ログイン・遅刻者一覧（{selectedDate}）</h2>
 
       {loading ? (
         <p>読み込み中...</p>
@@ -50,6 +48,6 @@ export default function MissedLoginList() {
           </tbody>
         </table>
       )}
-    </div>
+    </>
   );
 }
