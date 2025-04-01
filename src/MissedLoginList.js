@@ -1,4 +1,3 @@
-// src/MissedLoginList.js
 import React, { useEffect, useState } from "react";
 
 export default function MissedLoginList({ selectedDate }) {
@@ -6,9 +5,8 @@ export default function MissedLoginList({ selectedDate }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!selectedDate) return;
-
-    fetch(`https://fastapi-backend-dot2.onrender.com/login-check?date=${selectedDate}`)
+    // ※ selectedDateは使わず、APIは常に "今日" をチェック
+    fetch("https://fastapi-backend-dot2.onrender.com/login-check")
       .then((res) => res.json())
       .then((data) => {
         setMissedLogins(data.missed_logins || []);
@@ -18,11 +16,13 @@ export default function MissedLoginList({ selectedDate }) {
         console.error("取得失敗:", err);
         setLoading(false);
       });
-  }, [selectedDate]);
+  }, []); // ← selectedDateを依存配列から削除
+
+  const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
   return (
     <>
-      <h2 className="text-lg font-bold mb-2">🚨 未ログイン・遅刻者一覧（{selectedDate}）</h2>
+      <h2 className="text-lg font-bold mb-2">🚨 未ログイン・遅刻者一覧（{todayStr}）</h2>
 
       {loading ? (
         <p>読み込み中...</p>

@@ -42,7 +42,7 @@ export default function ScheduleList({ selectedDate }) {
             </thead>
             <tbody>
               {schedules.map((item) => (
-                <tr key={item.id}>
+                <tr key={`${item.user_id}-${item.date}`}>
                   <td className="border px-2 py-1">{item.username}</td>
                   <td className="border px-2 py-1">{item.date}</td>
                   <td className="border px-2 py-1">{item.work_code || "-"}</td>
@@ -51,6 +51,7 @@ export default function ScheduleList({ selectedDate }) {
                 </tr>
               ))}
             </tbody>
+
           </table>
         )}
       </div>
