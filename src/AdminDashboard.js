@@ -38,11 +38,13 @@ export default function AdminDashboard({ today }) {
           date: row.date,
           work_code: row.work_code || null,
           expected_login_time:
-            typeof row.expected_login_time === "string" && row.expected_login_time.trim() !== ""
-              ? row.expected_login_time.trim()
-              : null,
-          login_time:
-            typeof row.login_time === "string" && row.login_time.trim() !== ""
+          typeof row.expected_login_time === "string" &&
+          row.expected_login_time.trim().match(/^([01]\d|2[0-3]):[0-5]\d$/)
+            ? row.expected_login_time.trim()
+            : null,
+            login_time:
+            typeof row.login_time === "string" &&
+            row.login_time.trim().match(/^([01]\d|2[0-3]):[0-5]\d$/)
               ? row.login_time.trim()
               : null,
           is_holiday: row.is_holiday === "TRUE" || row.is_holiday === "true",
