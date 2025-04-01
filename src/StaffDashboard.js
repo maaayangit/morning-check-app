@@ -16,19 +16,49 @@ export default function StaffDashboard() {
 
   useEffect(() => {
     if (!userId || !selectedPlanDate) return;
-    fetch(`https://fastapi-backend-dot2.onrender.com/work-code?user_id=${userId}&date=${selectedPlanDate}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setWorkCode(data.work_code || "");
-        setWorkCodeMaster({
-          "★07A": "07:00",
-          "★08A": "08:00",
-          "★11A": "11:00",
-        });
-      })
-      .catch((err) => console.error("勤務指定の取得に失敗:", err));
+  
+    const fetchWorkCodeFromCalendar = async () => {
+      const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+      const supabaseKey = process.env.REACT_APP_SUPABASE_KEY;
+      const supabase = window.supabaseClient || require('@supabase/supabase-js').createClient(supabaseUrl, supabaseKey);
+      
+      // user_calendars テーブルから calendar_id を取得
+      const { data: calendarMap } = await supabase
+        .from("user_calendars")
+        .select("calendar_id")
+        .eq("user_id", userId);
+  
+      if (!calendarMap || calendarMap.length === 0) {
+        setWorkCode("（指定なし）");
+        return;
+      }
+  
+      const calendarId = calendarMap[0].calendar_id;
+  
+      // calendar_events から該当日のイベントを取得
+      const { data: events } = await supabase
+        .from("calendar_events")
+        .select("*")
+        .eq("calendar_id", calendarId)
+        .gte("start_time", `${selectedPlanDate}T00:00:00`)
+        .lt("start_time", `${selectedPlanDate}T23:59:59`);
+  
+      if (!events || events.length === 0) {
+        setWorkCode("（指定なし）");
+        return;
+      }
+  
+      const event = events[0];
+      const start = new Date(event.start_time);
+      const end = new Date(event.end_time);
+  
+      const formatted = `${start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}〜${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ${event.group_name}`;
+      setWorkCode(formatted);
+    };
+  
+    fetchWorkCodeFromCalendar();
   }, [selectedPlanDate, userId]);
-
+  
   const handleActualLogin = async () => {
     if (!userId || userId.length !== 7) {
       setMessage("⛔ 正しい7桁の社員番号を入力してください");
