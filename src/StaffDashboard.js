@@ -2,6 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PlanLogList from "./PlanLogList";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_KEY
+);
 
 export default function StaffDashboard() {
   const [userId, setUserId] = useState("");
@@ -18,11 +24,6 @@ export default function StaffDashboard() {
     if (!userId || !selectedPlanDate) return;
   
     const fetchWorkCodeFromCalendar = async () => {
-      const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-      const supabaseKey = process.env.REACT_APP_SUPABASE_KEY;
-      const supabase = window.supabaseClient || require('@supabase/supabase-js').createClient(supabaseUrl, supabaseKey);
-      
-      // user_calendars テーブルから calendar_id を取得
       const { data: calendarMap } = await supabase
         .from("user_calendars")
         .select("calendar_id")
@@ -35,7 +36,6 @@ export default function StaffDashboard() {
   
       const calendarId = calendarMap[0].calendar_id;
   
-      // calendar_events から該当日のイベントを取得
       const { data: events } = await supabase
         .from("calendar_events")
         .select("*")
@@ -52,12 +52,12 @@ export default function StaffDashboard() {
       const start = new Date(event.start_time);
       const end = new Date(event.end_time);
   
-      const formatted = `${start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}〜${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ${event.group_name}`;
+      const formatted = `${start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}〜${end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ${event.group_name}`;
       setWorkCode(formatted);
     };
   
     fetchWorkCodeFromCalendar();
-  }, [selectedPlanDate, userId]);
+  }, [selectedPlanDate, userId]);  
   
   const handleActualLogin = async () => {
     if (!userId || userId.length !== 7) {
