@@ -27,7 +27,7 @@ export default function AdminDashboard({ today }) {
 
   const handleUpload = () => {
     if (!csvFile) return;
-
+  
     Papa.parse(csvFile, {
       header: true,
       skipEmptyLines: true,
@@ -37,16 +37,20 @@ export default function AdminDashboard({ today }) {
           username: row.username,
           date: row.date,
           work_code: row.work_code || null,
-          expected_login_time: row.expected_login_time || null,
+          expected_login_time:
+            typeof row.expected_login_time === "string" && row.expected_login_time.trim() !== ""
+              ? row.expected_login_time.trim()
+              : null,
           login_time:
-            typeof row.login_time === "string" ? row.login_time : null,
+            typeof row.login_time === "string" && row.login_time.trim() !== ""
+              ? row.login_time.trim()
+              : null,
           is_holiday: row.is_holiday === "TRUE" || row.is_holiday === "true",
         }));
-      
-
+  
         setSchedulePreview(data);
         setShowPreview(false);
-
+  
         fetch("https://fastapi-backend-dot2.onrender.com/upload-schedule", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
