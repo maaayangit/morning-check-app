@@ -38,9 +38,11 @@ export default function AdminDashboard({ today }) {
           date: row.date,
           work_code: row.work_code || null,
           expected_login_time: row.expected_login_time || null,
-          login_time: row.login_time || null,
+          login_time:
+            typeof row.login_time === "string" ? row.login_time : null,
           is_holiday: row.is_holiday === "TRUE" || row.is_holiday === "true",
         }));
+      
 
         setSchedulePreview(data);
         setShowPreview(false);
