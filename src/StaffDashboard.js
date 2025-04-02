@@ -24,21 +24,23 @@ export default function StaffDashboard() {
       const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
       const supabaseKey = process.env.REACT_APP_SUPABASE_KEY;
     
-      console.log("🔍 Supabase URL:", supabaseUrl);
-      console.log("📡 Supabaseクライアント初期化中...");
-    
       const supabase = createClient(supabaseUrl, supabaseKey);
-  
-      const { data: calendarMap, error } = await supabase
+    
+      const convertedId = Number(userId);
+      console.log("🔎 クエリ送信前 userId:", convertedId, "型:", typeof convertedId);
+    
+      const query = supabase
         .from("user_calendars")
         .select("calendar_id")
-        .eq("user_id", Number(userId))
-  
+        .eq("user_id", convertedId);
+    
+      console.log("📨 Supabaseクエリ:", query);
+    
+      const { data: calendarMap, error } = await query;
+    
       console.log("🗂 calendarMap:", calendarMap);
       console.log("🐛 error:", error);
-      console.log("🧪 typeof userId:", typeof userId, "value:", userId);  // ← 一度出力して確認
-
-  
+      
       if (!calendarMap || calendarMap.length === 0) {
         setWorkCode("（指定なし）");
         return;
