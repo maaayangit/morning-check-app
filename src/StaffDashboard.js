@@ -21,11 +21,12 @@ export default function StaffDashboard() {
     console.log("📦 useEffect発動", userId, selectedPlanDate);
   
     const fetchWorkCodeFromCalendar = async () => {
-      console.log("🔍 Supabase URL:", supabaseUrl);
-      console.log("📡 Supabaseクライアント初期化中...");
       const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
       const supabaseKey = process.env.REACT_APP_SUPABASE_KEY;
-  
+    
+      console.log("🔍 Supabase URL:", supabaseUrl);
+      console.log("📡 Supabaseクライアント初期化中...");
+    
       const supabase = createClient(supabaseUrl, supabaseKey);
   
       const { data: calendarMap, error } = await supabase
