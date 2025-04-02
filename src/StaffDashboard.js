@@ -4,11 +4,6 @@ import { useNavigate } from "react-router-dom";
 import PlanLogList from "./PlanLogList";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_KEY
-);
-
 export default function StaffDashboard() {
   const [userId, setUserId] = useState("");
   const [mode, setMode] = useState("");
@@ -35,7 +30,7 @@ export default function StaffDashboard() {
       const { data: calendarMap, error } = await supabase
         .from("user_calendars")
         .select("calendar_id")
-        .eq("user_id", userId);
+        .eq("user_id", Number(userId));
   
       console.log("🗂 calendarMap:", calendarMap);
       console.log("🐛 error:", error);
