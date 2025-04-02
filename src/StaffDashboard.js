@@ -34,6 +34,8 @@ export default function StaffDashboard() {
   
       console.log("🗂 calendarMap:", calendarMap);
       console.log("🐛 error:", error);
+      console.log("🧪 typeof userId:", typeof userId, "value:", userId);  // ← 一度出力して確認
+
   
       if (!calendarMap || calendarMap.length === 0) {
         setWorkCode("（指定なし）");
