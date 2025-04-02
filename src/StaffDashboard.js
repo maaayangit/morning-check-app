@@ -30,7 +30,7 @@ export default function StaffDashboard() {
       const { data: calendarMap, error } = await supabase
         .from("user_calendars")
         .select("calendar_id")
-        .eq("user_id", 8534864);  // ← 数値で直接書く
+        .eq("user_id", Number(userId))
   
       console.log("🗂 calendarMap:", calendarMap);
       console.log("🐛 error:", error);
