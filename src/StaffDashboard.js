@@ -23,41 +23,34 @@ export default function StaffDashboard() {
   useEffect(() => {
     if (!userId || !selectedPlanDate) return;
   
+    console.log("📦 useEffect発動", userId, selectedPlanDate);
+  
     const fetchWorkCodeFromCalendar = async () => {
-      const { data: calendarMap } = await supabase
+      console.log("📡 Supabaseクライアント初期化中...");
+      const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+      const supabaseKey = process.env.REACT_APP_SUPABASE_KEY;
+  
+      const supabase = createClient(supabaseUrl, supabaseKey);
+  
+      const { data: calendarMap, error } = await supabase
         .from("user_calendars")
         .select("calendar_id")
         .eq("user_id", userId);
+  
+      console.log("🗂 calendarMap:", calendarMap);
+      console.log("🐛 error:", error);
   
       if (!calendarMap || calendarMap.length === 0) {
         setWorkCode("（指定なし）");
         return;
       }
   
-      const calendarId = calendarMap[0].calendar_id;
-  
-      const { data: events } = await supabase
-        .from("calendar_events")
-        .select("*")
-        .eq("calendar_id", calendarId)
-        .gte("start_time", `${selectedPlanDate}T00:00:00`)
-        .lt("start_time", `${selectedPlanDate}T23:59:59`);
-  
-      if (!events || events.length === 0) {
-        setWorkCode("（指定なし）");
-        return;
-      }
-  
-      const event = events[0];
-      const start = new Date(event.start_time);
-      const end = new Date(event.end_time);
-  
-      const formatted = `${start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}〜${end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ${event.group_name}`;
-      setWorkCode(formatted);
+      // 後略（イベント取得）
     };
   
     fetchWorkCodeFromCalendar();
-  }, [selectedPlanDate, userId]);  
+  }, [selectedPlanDate, userId]);
+  
   
   const handleActualLogin = async () => {
     if (!userId || userId.length !== 7) {
@@ -67,7 +60,11 @@ export default function StaffDashboard() {
 
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
-    const time = now.toTimeString().slice(0, 5);
+    const hh = now.getHours().toString().padStart(2, "0");
+    const mm = now.getMinutes().toString().padStart(2, "0");
+    const ss = now.getSeconds().toString().padStart(2, "0");
+    const time = `${hh}:${mm}:${ss}`;
+
 
     const checkRes = await fetch(`https://fastapi-backend-dot2.onrender.com/schedules?date=${today}`);
     const scheduleData = await checkRes.json();
