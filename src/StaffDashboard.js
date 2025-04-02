@@ -29,7 +29,7 @@ export default function StaffDashboard() {
   
       const { data: calendarMap, error } = await supabase
         .from("user_calendars")
-        .select("calendar_id")
+        .select("*")
         .eq("user_id", Number(userId));
   
       console.log("🗂 calendarMap:", calendarMap);
