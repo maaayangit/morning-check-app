@@ -72,19 +72,21 @@ export default function PlanLogList({ userId, refreshTrigger }) {
             </tr>
           </thead>
           <tbody>
-            {logs.map((log, idx) => (
-              <tr key={idx}>
-                <td className="border px-2 py-1">{log.date}</td>
-                <td className="border px-2 py-1">{log.expected_login_time}</td>
-                <td className="border px-2 py-1">
-                  {formatDateTimeJST(log.registered_at)}
-                </td>
-                <td className="border px-2 py-1">
-                  {actualLoginMap[log.date]
-                    ? formatDateTimeJST(`${log.date}T${actualLoginMap[log.date]}`)
-                    : "－"}
-                </td>
-              </tr>
+            {[...logs]
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
+              .map((log, idx) => (
+                <tr key={idx}>
+                  <td className="border px-2 py-1">{log.date}</td>
+                  <td className="border px-2 py-1">{log.expected_login_time}</td>
+                  <td className="border px-2 py-1">
+                    {formatDateTimeJST(log.registered_at)}
+                  </td>
+                  <td className="border px-2 py-1">
+                    {actualLoginMap[log.date]
+                      ? formatDateTimeJST(`${log.date}T${actualLoginMap[log.date]}`)
+                      : "－"}
+                  </td>
+                </tr>
             ))}
           </tbody>
         </table>
