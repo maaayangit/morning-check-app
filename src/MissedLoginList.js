@@ -5,7 +5,6 @@ export default function MissedLoginList({ selectedDate }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // ※ selectedDateは使わず、APIは常に "今日" をチェック
     fetch("https://fastapi-backend-dot2.onrender.com/login-check")
       .then((res) => res.json())
       .then((data) => {
@@ -16,7 +15,7 @@ export default function MissedLoginList({ selectedDate }) {
         console.error("取得失敗:", err);
         setLoading(false);
       });
-  }, []); // ← selectedDateを依存配列から削除
+  }, []); // ← selectedDate を依存配列から削除
 
   const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
@@ -40,7 +39,7 @@ export default function MissedLoginList({ selectedDate }) {
           <tbody>
             {missedLogins.map((item, index) => (
               <tr key={index}>
-                <td className="border px-2 py-1">{item.username}</td>
+                <td className="border px-2 py-1">{item.user_id}</td>
                 <td className="border px-2 py-1">{item.date}</td>
                 <td className="border px-2 py-1 text-red-600">{item.reason}</td>
               </tr>
