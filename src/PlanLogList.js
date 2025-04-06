@@ -5,14 +5,15 @@ export default function PlanLogList({ userId, refreshTrigger }) {
 
   useEffect(() => {
     if (!userId) return;
-
+  
     fetch(`https://fastapi-backend-dot2.onrender.com/log-plan?user_id=${userId}`)
       .then((res) => res.json())
       .then((data) => {
-        const sorted = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sorted = (data.logs || []).sort((a, b) => new Date(b.date) - new Date(a.date));
         setLogs(sorted);
-      });
-  }, [userId, refreshTrigger]);
+      })
+      .catch((err) => console.error("取得エラー:", err));
+  }, [userId, refreshTrigger]);  
 
   return (
     <div className="bg-white shadow rounded p-4 mt-4">
