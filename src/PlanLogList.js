@@ -18,7 +18,7 @@ export default function PlanLogList({ userId, refreshTrigger }) {
   return (
     <div className="bg-white shadow rounded p-4 mt-4">
       <h3 className="text-lg font-bold mb-2">🕓 出勤予定・実績履歴</h3>
-
+  
       {logs.length === 0 ? (
         <p className="text-gray-500">登録された履歴はありません</p>
       ) : (
@@ -35,9 +35,48 @@ export default function PlanLogList({ userId, refreshTrigger }) {
             {logs.map((log, index) => (
               <tr key={index}>
                 <td className="border px-2 py-1">{log.date}</td>
-                <td className="border px-2 py-1">{log.expected_login_time || "－"}</td>
-                <td className="border px-2 py-1">{log.registered_at?.slice(0, 16).replace("T", " ") || "－"}</td>
-                <td className="border px-2 py-1">{log.login_time || "－"}</td>
+  
+                <td className="border px-2 py-1">
+                  {log.expected_login_time
+                    ? new Date(log.expected_login_time).toLocaleString("ja-JP", {
+                        timeZone: "Asia/Tokyo",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      }).replace(/\//g, "-")
+                    : "－"}
+                </td>
+  
+                <td className="border px-2 py-1">
+                  {log.registered_at
+                    ? new Date(log.registered_at).toLocaleString("ja-JP", {
+                        timeZone: "Asia/Tokyo",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      }).replace(/\//g, "-")
+                    : "－"}
+                </td>
+  
+                <td className="border px-2 py-1">
+                  {log.login_time
+                    ? new Date(log.login_time).toLocaleString("ja-JP", {
+                        timeZone: "Asia/Tokyo",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      }).replace(/\//g, "-")
+                    : "－"}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -45,4 +84,6 @@ export default function PlanLogList({ userId, refreshTrigger }) {
       )}
     </div>
   );
+  
+  
 }
